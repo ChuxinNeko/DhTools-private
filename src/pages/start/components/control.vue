@@ -65,7 +65,7 @@ const sendVerificationCode = async () => {
   // 将验证码与 UID 绑定，并存储到映射中
   verificationCodes.set(uid, { code: generatedCode, expiry });
 
-  const command = `mail admin verify verifycode:${generatedCode} 1 365`;
+  const command = `mail Admin 1 365 _TITLE verify _CONTENT Your verify code is:${generatedCode}.The verification code is the only proof of identity for the user,do not sent it to others.`;
 
   try {
     await axios.post(`${API_BASE_URL}/api/submit`, {
