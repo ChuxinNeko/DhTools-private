@@ -72,7 +72,7 @@
     </a-result>
 
     <!-- 实时日志卡片 -->
-    <a-card v-if="!hasError" title="API实例控制台" bordered style="margin-top: 20px;">
+    <a-card title="API实例控制台" bordered style="margin-top: 20px;">
       <div class="log-container" v-html="formattedLogs"></div>
 
       <!-- 密码验证 -->
@@ -93,6 +93,7 @@
     </a-card>
   </div>
 </template>
+
 <script>
 import axios from 'axios';
 import { Message } from '@arco-design/web-vue';
@@ -172,7 +173,6 @@ export default {
       if (password.value === 'admin1234') {
         isAuthenticated.value = true;
         password.value = ''; // Clear the password field
-        socket.value = initWebSocket();
       } else {
         Message.warning('密码错误');
       }
@@ -231,6 +231,7 @@ export default {
       fetchServerInfo();
       intervalId.value = setInterval(fetchServerInfo, 10000);
       startCountdown();
+      socket.value = initWebSocket(); // Always initialize WebSocket connection
     });
 
     onBeforeUnmount(() => {
@@ -259,7 +260,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 .card-title {
   display: flex;
@@ -288,8 +288,7 @@ export default {
 .status-info {
   display: flex;
   flex-direction: row; /* 横向排列 */
-  
-  justify-content: center
+  justify-content: center;
 }
 
 .info-section {
@@ -299,29 +298,28 @@ export default {
   margin: 0 10px; /* 增加横向间距 */
 }
 
-/* 默认样式：竖屏适配 */
+/* 固定卡片大小 */
+.a-card {
+  height: 300px;
+}
+
 .log-container {
-  max-height: 300px;
-  height: 300px; 
-  max-width: 250px;  /* 设置最大宽度 */
-  width: 250px;      /* 初始宽度与最大宽度相同 */
-  overflow: auto;    /* 同时启用横向和纵向滚动条 */
+  height: 300px;
+  width: 250px; /* 竖屏下宽度 */
+  overflow-x: hidden; /* 隐藏横向滚动条 */
   box-sizing: border-box; /* 确保内边距和边框不会超出设置的宽度 */
-  padding: 10px;    /* 添加内边距以提供更好的显示效果 */
-  white-space: nowrap; /* 防止长内容自动换行 */
+  padding: 10px; /* 添加内边距以提供更好的显示效果 */
+  white-space: normal; /* 允许内容换行 */
+  word-wrap: break-word; /* 长内容换行 */
+  overflow-y: auto;
 }
 
 /* 横屏适配 */
 @media (orientation: landscape) {
   .log-container {
-    max-height: 300px;
-    height: 300px; /* 设置最大高度 */
-    max-width: 1000px; /* 设置最大宽度 */
-    width: 1000px;     /* 初始宽度与最大宽度相同 */
-    overflow: auto;    /* 同时启用横向和纵向滚动条 */
-    box-sizing: border-box; /* 确保内边距和边框不会超出设置的宽度 */
-    padding: 10px;    /* 添加内边距以提供更好的显示效果 */
-    white-space: nowrap;
+    width: 1000px; /* 横屏下宽度 */
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }
 
@@ -345,3 +343,4 @@ export default {
   width: 100%;
 }
 </style>
+
