@@ -17,35 +17,47 @@
         <a-col :span="24">
           <div class="status-info">
             <div class="info-section">
-              <a-progress
-                type="circle"
-                :percent="cpuUsagePercent"
-                :style="{ width: '100px' }"
-                :color="{
-                  '0%': 'rgb(var(--primary-6))',
-                  '100%': 'rgb(var(--success-6))',
-                }"
-                :format="percent => `${(percent * 100).toFixed(0)}%`"
-              />
+              <a-popover trigger="hover" content="详细信息" placement="top">
+                <template #content>
+                  <div>
+                    <p><strong>CPU：</strong>{{ serverInfo.cpuModel }}</p>
+                    <p><strong>系统版本：</strong>{{ serverInfo.systemVersion }}</p>
+                  </div>
+                </template>
+                <a-progress
+                  type="circle"
+                  :percent="cpuUsagePercent"
+                  :style="{ width: '100px' }"
+                  :color="{
+                    '0%': 'rgb(var(--primary-6))',
+                    '100%': 'rgb(var(--success-6))',
+                  }"
+                  :format="percent => `${(percent * 100).toFixed(0)}%`"
+                />
+              </a-popover>
               <p><strong>CPU 使用率：</strong>{{ (cpuUsagePercent * 100).toFixed(0) }}%</p>
-              <p><strong>CPU 型号：</strong>{{ serverInfo.cpuModel }}</p>
-              <p><strong>系统版本：</strong>{{ serverInfo.systemVersion }}</p>
             </div>
             <div class="info-section">
-              <a-progress
-                type="circle"
-                :percent="memoryUsagePercent"
-                :style="{ width: '100px' }"
-                :color="{
-                  '0%': 'rgb(var(--primary-6))',
-                  '100%': 'rgb(var(--success-6))',
-                }"
-                :format="percent => `${(percent * 100).toFixed(0)}%`"
-              />
+              <a-popover trigger="hover" content="详细信息" placement="top">
+                <template #content>
+                  <div>
+                    <p><strong>最大内存：</strong>{{ serverInfo.maxMemory }} MB</p>
+                    <p><strong>已用内存：</strong>{{ serverInfo.usedMemory }} MB</p>
+                    <p><strong>程序使用内存：</strong>{{ serverInfo.programUsedMemory }} MB</p>
+                  </div>
+                </template>
+                <a-progress
+                  type="circle"
+                  :percent="memoryUsagePercent"
+                  :style="{ width: '100px' }"
+                  :color="{
+                    '0%': 'rgb(var(--primary-6))',
+                    '100%': 'rgb(var(--success-6))',
+                  }"
+                  :format="percent => `${(percent * 100).toFixed(0)}%`"
+                />
+              </a-popover>
               <p><strong>内存使用率：</strong>{{ (memoryUsagePercent * 100).toFixed(0) }}%</p>
-              <p><strong>最大内存：</strong>{{ serverInfo.maxMemory }} MB</p>
-              <p><strong>已用内存：</strong>{{ serverInfo.usedMemory }} MB</p>
-              <p><strong>程序使用内存：</strong>{{ serverInfo.programUsedMemory }} MB</p>
             </div>
           </div>
         </a-col>
@@ -93,7 +105,6 @@
     </a-card>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
 import { Message } from '@arco-design/web-vue';
@@ -343,4 +354,3 @@ export default {
   width: 100%;
 }
 </style>
-
