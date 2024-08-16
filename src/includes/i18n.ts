@@ -30,6 +30,7 @@ const options: I18nOptions = {
         monsterspawning:"怪物生成",
         presetshortcuts:"预设快捷指令",
         lightcones:"光锥",
+        getrole:"获得角色",
         item:"物品",
         character:"角色形迹设置",
         rankuser:"角色星魂设置",
