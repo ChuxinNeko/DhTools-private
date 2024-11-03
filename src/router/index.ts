@@ -1,127 +1,66 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-// import routes from 'virtual:generated-pages'
-// console.log(routes,'打印生成自动生成的路由')
-
 let constantRoutes = [
   {
     path: '/',
-    component: () => import('@/pages/index.vue'),
+    component: () => import('@/pages/login.vue'),
   },
   {
-    path: '/start',
-    component: () => import('@/pages/start/index.vue'),
-    children: [
-      {
-        path: "/start/commuse",
-        component: () => import('@/pages/start/components/commuse.vue'),
-      },
-      {
-        path: "/start/player",
-        component: () => import('@/pages/start/components/player.vue'),
-      },
-      {
-        path: "/start/note",
-        component: () => import('@/pages/start/components/note.vue'),
-      },
-      {
-        path: "/start/suggest",
-        component: () => import('@/pages/start/components/suggest.vue'),
-      },
-      {
-        path: "/start/about",
-        component: () => import('@/pages/start/components/about.vue'),
-      },
-      {
-        path: "/start/thing",
-        component: () => import('@/pages/start/components/thing.vue'),
-      },
-      {
-        path: "/start/role",
-        component: () => import('@/pages/start/components/role.vue'),
-      },
-      {
-        path: "/start/holyrelic",
-        component: () => import('@/pages/start/components/holyrelic.vue'),
-      },
-      {
-        path: "/start/holyrelic2",
-        component: () => import('@/pages/start/components/holyrelic2.vue'),
-      },
-      {
-        path: "/start/monster",
-        component: () => import('@/pages/start/components/monster.vue'),
-      },
-      {
-        path: "/start/other",
-        component: () => import('@/pages/start/components/other.vue'),
-      },
-      {
-        path: "/start/control",
-        component: () => import('@/pages/start/components/control.vue'),
-      },
-      {
-        path: "/start/weapon",
-        component: () => import('@/pages/start/components/weapon.vue'),
-      },
-      {
-        path: "/start/wss",
-        component: () => import('@/pages/login/index.vue'),
-      },
-      {
-        path: "/start/consoled",
-        component: () => import('@/pages/consoled/index.vue'),
-      },
-      {
-        path: "/start/personnel",
-        component: () => import('@/pages/start/components/personnel.vue'),
-      },
-      {
-        path: "/start/login",
-        component: () => import('@/pages/start/manager/login.vue'),
-      },
-      {
-        path: "/start/register",
-        component: () => import('@/pages/start/manager/register.vue'),
-      },
-      {
-        path: "/start/getrole",
-        component: () => import('@/pages/start/components/getrole.vue'),
-      },
-      {
-        path: "/start/avatar",
-        component: () => import('@/pages/start/components/avatar.vue'),
-      },
-      {
-        path: "/start/leveluser",
-        component: () => import('@/pages/start/components/leveluser.vue'),
-      },
-      {
-        path: "/start/rankuser",
-        component: () => import('@/pages/start/components/rankuser.vue'),
-      },
-      {
-        path: "/start/food",
-        component: () => import('@/pages/start/components/food.vue'),
-      },
-      {
-        path: "/start/page1",
-        component: () => import('@/pages/start/components/page1.vue'),
-      },
-      {
-        path: "/start/information",
-        component: () => import('@/pages/start/manager/information.vue'),
-      },
-      {
-        path: "/start/scene",
-        component: () => import('@/pages/start/components/scene.vue'),
-      },
-      {
-        path: "/start/commandplayground",
-        component: () => import('@/pages/start/manager/commandplayground.vue'),
-      }
-      
-    ]
+    path: '/avatar',
+    component: () => import('@/pages/avatar.vue'),
+  },
+  {
+    path: '/thing',
+    component: () => import('@/pages/thing.vue'),
+  },
+  {
+    path: '/common',
+    component: () => import('../views/common.vue'),
+  },
+  {
+    path: '/food',
+    component: () => import('@/pages/food.vue'),
   }
+  ,
+  {
+    path: '/commuse',
+    component: () => import('@/pages/commuse.vue'),
+  },
+  {
+    path: '/holyrelic',
+    component: () => import('@/pages/holyrelic.vue'),
+  },
+  {
+    path: '/holyrelic2',
+    component: () => import('@/pages/holyrelic2.vue'),
+  },
+  {
+    path: '/weapon',
+    component: () => import('@/pages/weapon.vue'),
+  },
+  {
+    path: '/avatarall',
+    component: () => import('@/pages/avatarall.vue'),
+  },
+  {
+    path: '/mission',
+    component: () => import('@/pages/mission.vue'),
+  },
+  {
+    path: '/information',
+    component: () => import('@/pages/information.vue'),
+  },
+  {
+    path: '/other',
+    component: () => import('@/pages/other.vue'),
+  },
+  {
+    path: '/scene',
+    component: () => import('@/pages/scene.vue'),
+  },
+  {
+    path: '/chatlist',
+    component: () => import('@/pages/chatlist.vue'),
+  },
 
 ]
 
