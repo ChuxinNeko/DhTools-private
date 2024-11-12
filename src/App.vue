@@ -20,7 +20,7 @@
   >
     <div>
       <p>本项目为独立开源项目，项目地址:<a href="https://github.com/lctoolsweb/DanhengWebTools" target="_blank">DanhengWebTools</a>。</p>
-      <p>项目不会以任何形式收费，也不会作为任何付费服务器的赠送品。</p>
+      <p>项目不会以任何形式收费，也不会作为任何付费服务器的赠送品，拼多多等电商均为倒卖。</p>
       <p>您在阅读后勾选下方注意事项并点击确定方可开始使用：</p>
       <a-checkbox v-model="checkbox1">
         <span :style="{ color: checkboxTextColor }">我已知晓梦乡服务器和本指令生成器都是免费的，且绝不会以任何形式进行收费。</span>
@@ -110,6 +110,9 @@ const handleOk = () => {
   }
   visible.value = false; // 确保只有点击确定按钮后关闭对话框
 };
+
+// 显式暴露给模板
+defineExpose({ isMobile });
 
 watch(
   () => appStore.theme,
