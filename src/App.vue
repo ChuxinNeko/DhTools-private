@@ -19,15 +19,15 @@
     :top="isMobile ? '20px' : '60px'"
   >
     <div>
-      <p>本指令生成器为独立项目，不会以任何形式收费，也不会作为任何付费服务器的附赠品。</p>
+      <p>本指令生成器为独立项目，不会以任何形式收费，也不会作为任何付费服务器的附赠品。不会出现在拼多多闲鱼等平台</p>
       <p>勾选下方注意事项并点击确定方可开始使用：</p>
       <a-checkbox v-model="checkbox1">我已知晓梦乡服务器和本指令生成器都是免费的。</a-checkbox>
       <br />
-      <a-checkbox v-model="checkbox2">当我付费得到本项目并遇到问题时，我会主动询问卖家而不是以蛮横态度询问开发者。</a-checkbox>
+      <a-checkbox v-model="checkbox2">当我付费得到本项目并遇到问题时，我会主动询问卖家而不是询问开发者。</a-checkbox>
     </div>
     <template #footer>
       <!-- 取消按钮失效 -->
-      <a-button disabled>取消</a-button>
+      <a-button @click="joingroup" >加入群聊</a-button>
       <!-- 确定按钮，点击后关闭对话框 -->
       <a-button type="primary" @click="handleOk">确定</a-button>
     </template>
@@ -87,6 +87,13 @@ const handleOk = () => {
   }
   visible.value = false; // 确保只有点击确定按钮后关闭对话框
 };
+const joingroup = () => {
+  window.open(
+    "http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=JI5ZPpenP8i1e8fJj4zHDcgoJdYlaPyE&authKey=Od2ihJ5JGRd6vu5PVc1t%2Buiu0Uwov2O1JRYJmbYozcROGxQrrlZojHk40jMrEhyR&noverify=0&group_code=859381480",
+    "_blank"
+  );
+};
+
 </script>
 
 
