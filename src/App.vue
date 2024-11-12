@@ -19,11 +19,15 @@
     :top="isMobile ? '20px' : '60px'"
   >
     <div>
-      <p>本指令生成器为独立项目，不会以任何形式收费，也不会作为任何付费服务器的附赠品。不会出现在拼多多闲鱼等平台</p>
+      <p>本指令生成器为独立项目，不会以任何形式收费，也不会作为任何付费服务器的附赠品。出现在拼多多闲鱼等平台的均为倒卖！</p>
       <p>勾选下方注意事项并点击确定方可开始使用：</p>
-      <a-checkbox v-model="checkbox1">我已知晓梦乡服务器和本指令生成器都是免费的。</a-checkbox>
+      <a-checkbox v-model="checkbox1">
+        <span :style="{ color: checkboxTextColor }">我已知晓梦乡服务器和本指令生成器都是免费的。</span>
+      </a-checkbox>
       <br />
-      <a-checkbox v-model="checkbox2">当我付费得到本项目并遇到问题时，我会主动询问卖家而不是询问开发者。</a-checkbox>
+      <a-checkbox v-model="checkbox2">
+        <span :style="{ color: checkboxTextColor }">当我付费得到本项目并遇到问题时，我会主动询问卖家而不是询问开发者。</span>
+      </a-checkbox>
     </div>
     <template #footer>
       <!-- 取消按钮失效 -->
@@ -53,6 +57,9 @@ const checkbox2 = ref(false);
 // 计算属性：检测是否为移动端
 const isMobile = computed(() => {
   return window.innerWidth < 768; // 根据屏幕宽度判断
+});
+const checkboxTextColor = computed(() => {
+  return checkbox1.value && checkbox2.value ? 'green' : 'red';
 });
 
 // 显式暴露给模板
