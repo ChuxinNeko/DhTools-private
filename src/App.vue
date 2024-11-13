@@ -19,7 +19,7 @@
     :top="isMobile ? '20px' : '60px'"
   >
     <div>
-      <p>本项目为独立开源项目，项目地址:<a href="https://github.com/lctoolsweb/DanhengWebTools" target="_blank">DanhengWebTools</a>。</p>
+      <p>本项目为独立开源项目，本站仅用于梦乡公益服</p>
       <p>项目不会以任何形式收费，也不会作为任何付费服务器的赠送品，拼多多等电商均为倒卖。</p>
       <p>您在阅读后勾选下方注意事项并点击确定方可开始使用：</p>
       <a-checkbox v-model="checkbox1">
@@ -35,10 +35,12 @@
       </a-checkbox>
     </div>
     <template #footer>
-      <!-- 是否三日内隐藏选项 -->
-      <a-checkbox v-model="checkboxIsNoShow">三日内不再提醒</a-checkbox>
       <!-- 确定按钮，点击后关闭对话框 -->
-      <a-button type="primary" :disabled="IsDisabledEnter" @click="handleOk">确定</a-button>
+      <a-button type="primary" :disabled="IsDisabledEnter" @click="handleOk">
+        {{ IsDisabledEnter ? `确定（${countDown}s）` : '确定' }}
+      </a-button>
+      <!-- 是否三日内隐藏选项 -->
+      <a-checkbox v-if="!IsDisabledEnter" v-model="checkboxIsNoShow">三日内不再提醒</a-checkbox>
     </template>
   </a-modal>
 </template>
@@ -61,7 +63,8 @@ const checkbox1 = ref(false);
 const checkbox2 = ref(false);
 const checkbox3 = ref(false);
 const checkboxIsNoShow = ref(false); // 三日不再提醒
-const IsDisabledEnter = ref(true); // 禁用确定按钮5秒
+const IsDisabledEnter = ref(true); // 禁用确定按钮
+const countDown = ref(5); // 倒计时5秒
 
 // 计算属性：检测是否为移动端
 const isMobile = computed(() => {
@@ -89,10 +92,14 @@ onMounted(() => {
   const IsNoShow = Cookies.get("IsNoShow");
   if (!IsNoShow) {
     visible.value = true;
-    // 启动5秒计时器
-    setTimeout(() => {
-      IsDisabledEnter.value = false;
-    }, 5000);
+    // 启动倒计时
+    const timer = setInterval(() => {
+      countDown.value--;
+      if (countDown.value <= 0) {
+        IsDisabledEnter.value = false;
+        clearInterval(timer);
+      }
+    }, 1000);
   }
 
   const WSS = localStorage.getItem("WSS");
@@ -110,7 +117,7 @@ const handleOk = () => {
   const randomLink = getRandomGroupLink(); // 随机拿一个加群链接
   window.open(randomLink, "_blank");
 
-  // 如果勾选了不在弹出，进行Cookie设置
+  // 如果勾选了不再弹出，进行Cookie设置
   if (checkboxIsNoShow.value) {
     Cookies.set("IsNoShow", "true", { expires: 3 });
   }
