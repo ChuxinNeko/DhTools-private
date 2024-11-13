@@ -41,6 +41,10 @@ const options = reactive([
     value: '/giveall equipment r5 l80 x1',
   },
   {
+    title: '获得所有遗器',
+    value: '/giveall relic',
+  },
+  {
     title: '解锁所有任务',
     value: '/unlockall mission',
   },
@@ -77,20 +81,20 @@ const options = reactive([
     value: '/hero gender 1',
   },
   {
-    title: '切换主角命途为毁灭',
-    value: '/hero type 8001',
-  },
-  {
-    title: '切换主角命途为存护',
-    value: '/hero type 8003',
-  },
-  {
-    title: '切换主角命途为同谐',
-    value: '/hero type 8005',
-  },
-  {
-    title: '解锁全部命途',
+    title: '解锁全部角色命途',
     value: '/giveall path',
+  },
+  {
+    title: '清理背包（全部）',
+    value: '/clear all',
+  },
+  {
+    title: '清理背包（仅遗器）',
+    value: '/clear relic',
+  },
+  {
+    title: '跳过任务（当前全部进行中子任务）',
+    value: '/mission pass',
   },
 ])
 
@@ -106,7 +110,7 @@ function copyvalue(value: string) {
 const send: any = inject("send")
 
 const showNotice = ref(true)
-const noticeContent = 'LunarCore及其他任何衍生工具都是免费软件，如果你是付费购买的，那你就被骗了，请及时退款并举报。'
+const noticeContent = '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。'
 
 // 在页面加载时设置一个延时，用于显示滚动公告，你可以根据需求调整延时时长
 onMounted(() => {

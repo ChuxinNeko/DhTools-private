@@ -106,7 +106,7 @@ const base64Decode = (str: string): string => {
 const send = inject("send")
 
 const showNotice = ref(true)
-const noticeContent = 'LunarCore及其他任何衍生工具都是免费软件，如果你是付费购买的，那你就被骗了，请及时退款并举报。'
+const noticeContent = '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。'
 
 // 在页面加载时设置一个延时，用于显示滚动公告，你可以根据需求调整延时时长
 onMounted(() => {
