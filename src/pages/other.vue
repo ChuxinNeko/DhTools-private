@@ -45,6 +45,18 @@ const options = reactive([
     value: '/giveall relic',
   },
   {
+    title: '获得所有手机主题与头像气泡',
+    value: '/giveall unlock',
+  },
+  {
+    title: '获得所有宠物',
+    value: '/giveall pet',
+  },
+  {
+    title: '获得所有道具（食物等）',
+    value: '/giveall material',
+  },
+  {
     title: '解锁所有任务',
     value: '/unlockall mission',
   },
