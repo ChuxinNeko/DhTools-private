@@ -35,10 +35,10 @@
       </a-checkbox>
     </div>
     <template #footer>
-      <!-- 取消按钮失效 -->
-      <a-button @click="joingroup" >加入群聊</a-button>
+      <!-- 是否三日内隐藏选项 -->
+      <a-checkbox v-model="checkboxIsNoShow">三日内不再提醒</a-checkbox>
       <!-- 确定按钮，点击后关闭对话框 -->
-      <a-button type="primary" @click="handleOk">确定</a-button>
+      <a-button type="primary" :disabled="IsDisabledEnter" @click="handleOk">确定</a-button>
     </template>
   </a-modal>
 </template>
@@ -60,6 +60,8 @@ const visible = ref(false); // 初始化为 false，页面加载时判断是否�
 const checkbox1 = ref(false);
 const checkbox2 = ref(false);
 const checkbox3 = ref(false);
+const checkboxIsNoShow = ref(false); // 三日不再提醒
+const IsDisabledEnter = ref(true); // 禁用确定按钮5秒
 
 // 计算属性：检测是否为移动端
 const isMobile = computed(() => {
@@ -82,12 +84,15 @@ const getRandomGroupLink = () => {
   return groupLinks[randomIndex];
 };
 
-// 判断弹窗显示次数到次数后不再继续弹
+// 判断弹窗显示逻辑
 onMounted(() => {
-  const popupCount = parseInt(Cookies.get("popupCount") || "0", 10);
-  if (popupCount < 3) {
+  const IsNoShow = Cookies.get("IsNoShow");
+  if (!IsNoShow) {
     visible.value = true;
-    Cookies.set("popupCount", (popupCount + 1).toString(), { expires: 365 });
+    // 启动5秒计时器
+    setTimeout(() => {
+      IsDisabledEnter.value = false;
+    }, 5000);
   }
 
   const WSS = localStorage.getItem("WSS");
@@ -96,18 +101,20 @@ onMounted(() => {
   }
 });
 
-// 加入群聊
-const joingroup = () => {
-  const randomLink = getRandomGroupLink(); // 随机拿一个加群链接
-  window.open(randomLink, "_blank");
-};
-
 // 确认按钮操作
 const handleOk = () => {
   if (!checkbox1.value || !checkbox2.value || !checkbox3.value) {
     Message.error('请仔细阅读注意事项并勾选所有选项。');
     return;
   }
+  const randomLink = getRandomGroupLink(); // 随机拿一个加群链接
+  window.open(randomLink, "_blank");
+
+  // 如果勾选了不在弹出，进行Cookie设置
+  if (checkboxIsNoShow.value) {
+    Cookies.set("IsNoShow", "true", { expires: 3 });
+  }
+
   visible.value = false; // 确保只有点击确定按钮后关闭对话框
 };
 
@@ -128,9 +135,7 @@ watch(
     immediate: true,
   },
 );
-
 </script>
-
 
 <style>
 #app {
