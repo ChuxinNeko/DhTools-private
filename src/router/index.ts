@@ -13,10 +13,6 @@ let constantRoutes = [
     component: () => import('@/pages/thing.vue'),
   },
   {
-    path: '/common',
-    component: () => import('../views/common.vue'),
-  },
-  {
     path: '/food',
     component: () => import('@/pages/food.vue'),
   }
