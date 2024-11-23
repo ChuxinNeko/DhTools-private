@@ -6,15 +6,17 @@
     </div>
 
     <!-- 原有的组件内容 -->
-    <div class="commuse">
-      <div v-for="(item, index) in options" :key="index">
-        <div class="text-slate-900 dark:text-slate-100">{{ item.title }}</div>
-        <div>
-          <a-input v-model="item.value" placeholder="" disabled />
-        </div>
-        <div>
-          <a-button type="primary"  @click="copyvalue(item.value)">复制</a-button>
-          <a-button type="outline" v-if="appStore.isLogin" @click="send(item.value)">执行</a-button>
+    <div class="commuse-container">
+      <div class="commuse">
+        <div v-for="(item, index) in options" :key="index" class="commuse-item">
+          <div class="text-slate-900 dark:text-slate-100">{{ item.title }}</div>
+          <div>
+            <a-input v-model="item.value" placeholder="" disabled />
+          </div>
+          <div>
+            <a-button type="primary" @click="copyvalue(item.value)">复制</a-button>
+            <a-button type="outline" v-if="appStore.isLogin" @click="send(item.value)">执行</a-button>
+          </div>
         </div>
       </div>
     </div>
@@ -22,17 +24,17 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, inject, onMounted } from 'vue'
+import { reactive, ref, inject, onMounted } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { Message } from '@arco-design/web-vue'
 import { useAppStore } from '@/store/modules/app'
 import { useI18n } from 'vue-i18n'
 
-const { text, isSupported, copy } = useClipboard()
+const { copy, isSupported } = useClipboard()
 const appStore = useAppStore()
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const options = reactive([
-   {
+  {
     title: '获得全部角色',
     value: '/giveall avatar r6 l80',
   },
@@ -90,7 +92,7 @@ const options = reactive([
   },
   {
     title: '切换女主(重启生效)',
-    value: '/hero gender 1',
+    value: '/hero gender 2',
   },
   {
     title: '解锁全部角色命途',
@@ -103,6 +105,14 @@ const options = reactive([
   {
     title: '清理背包（仅遗器）',
     value: '/clear relic',
+  },
+  {
+    title: '清理背包（仅光锥）',
+    value: '/clear equipment',
+  },
+  {
+    title: '清理背包（材料大类）',
+    value: '/clear items',
   },
   {
     title: '跳过任务（当前全部进行中子任务）',
@@ -119,12 +129,11 @@ function copyvalue(value: string) {
   }
 }
 
-const send: any = inject("send")
+const send: any = inject('send')
 
 const showNotice = ref(true)
 const noticeContent = '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。'
-
-// 在页面加载时设置一个延时，用于显示滚动公告，你可以根据需求调整延时时长
+// 在页面加载时设置一个延时，用于显示滚动公告
 onMounted(() => {
   setTimeout(() => {
     showNotice.value = true
@@ -133,37 +142,39 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-/* 添加样式以美化滚动公告 */
+/* 滚动公告样式 */
 .scrolling-notice {
-  color: #BEBEBE;
+  color: #bebebe;
   padding: 8px;
   font-size: 14px;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   border-radius: 10px;
-  /* 添加圆角样式 */
 }
 
+.commuse-container {
+  max-height: 80vh; 
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* 表单样式 */
 .commuse {
-  width: 500px;
-  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
 
-  > div {
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-    color: #000;
+.commuse-item {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #000;
+}
 
-    > div {
-      &:nth-child(1) {
-        width: 130px;
-        color: #6b6a6a !important;
-      }
-
-      margin: 0 5px;
-    }
-  }
+.commuse-item > div {
+  margin: 5px 0;
 }
 
 .generate {
