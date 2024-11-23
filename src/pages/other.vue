@@ -8,7 +8,7 @@
     <!-- 原有的组件内容 -->
     <div class="commuse-container">
       <div class="commuse">
-        <div v-for="(item, index) in options" :key="index" class="commuse-item">
+        <div v-for="(item, index) in options" :key="index">
           <div class="text-slate-900 dark:text-slate-100">{{ item.title }}</div>
           <div>
             <a-input v-model="item.value" placeholder="" disabled />
@@ -30,7 +30,7 @@ import { Message } from '@arco-design/web-vue'
 import { useAppStore } from '@/store/modules/app'
 import { useI18n } from 'vue-i18n'
 
-const { copy, isSupported } = useClipboard()
+const { isSupported, copy } = useClipboard()
 const appStore = useAppStore()
 const { t } = useI18n()
 const options = reactive([
@@ -132,8 +132,10 @@ function copyvalue(value: string) {
 const send: any = inject('send')
 
 const showNotice = ref(true)
-const noticeContent = '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。'
-// 在页面加载时设置一个延时，用于显示滚动公告
+const noticeContent =
+  '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。'
+
+// 在页面加载时设置一个延时，用于显示滚动公告，你可以根据需求调整延时时长
 onMounted(() => {
   setTimeout(() => {
     showNotice.value = true
@@ -142,7 +144,7 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-/* 滚动公告样式 */
+/* 添加样式以美化滚动公告 */
 .scrolling-notice {
   color: #bebebe;
   padding: 8px;
@@ -151,30 +153,48 @@ onMounted(() => {
   white-space: nowrap;
   overflow: hidden;
   border-radius: 10px;
+  /* 添加圆角样式 */
 }
 
 .commuse-container {
-  max-height: 80vh; 
-  overflow-y: auto;
-  padding: 10px;
+  overflow-x: auto; /* 启用水平滚动 */
 }
 
-/* 表单样式 */
 .commuse {
-  display: flex;
-  flex-direction: column;
+  width: 500px;
+  margin: auto;
+  max-height: 80vh; /* 设置最大高度为视口高度的80% */
+  overflow-y: auto; /* 启用垂直滚动 */
+
+  > div {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* 允许换行 */
+    color: #000;
+
+    > div {
+      flex: 1 1 100%; 
+      margin: 5px 0;
+
+      &:nth-child(1) {
+        width: 130px;
+        color: #6b6a6a !important;
+      }
+    }
+  }
 }
 
-.commuse-item {
-  margin-bottom: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  color: #000;
-}
+/* 针对移动设备进行调整 */
+@media (max-width: 768px) {
+  .commuse {
+    width: 100%; /* 宽度自适应 */
+    padding: 0 10px; /* 增加左右内边距 */
+  }
 
-.commuse-item > div {
-  margin: 5px 0;
+  .commuse > div > div {
+    flex: 1 1 100%; /* 项目占满可用宽度 */
+  }
 }
 
 .generate {
