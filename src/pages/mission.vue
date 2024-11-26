@@ -1,12 +1,18 @@
 <template>
   <div>
-    <div class="scrolling-notice" v-if="showNotice">
-      <marquee behavior="scroll" direction="left">{{ noticeContent }}</marquee>
+    <!-- 任务操作选择框 -->
+    <div class="commuse-item">
+      <div class="text-slate-900 dark:text-slate-100">任务操作:</div>
+      <div class="select-container">
+        <a-select v-model="taskAction" placeholder="请选择任务操作" @change="handleTaskActionChange">
+          <a-option value="complete">完成或跳过任务</a-option>
+          <a-option value="reaccept">重新接取任务</a-option>
+        </a-select>
+      </div>
     </div>
-    <a-alert type="warning">
-      跳过任务存在未知风险，您需要自己承担跳过任务可能导致的各种后果。
-    </a-alert>
-    <div class="commuse">
+
+    <!-- 完成任务表单 -->
+    <div v-if="taskAction === 'complete'">
       <div class="commuse-item">
         <div class="text-slate-900 dark:text-slate-100">任务类型:</div>
         <div class="select-container">
@@ -18,8 +24,7 @@
         </div>
       </div>
 
-      <!-- 只在选择完成任务时显示原始表单 -->
-      <div v-if="taskAction === 'complete'" class="commuse-item">
+      <div class="commuse-item">
         <div class="text-slate-900 dark:text-slate-100">主任务:</div>
         <div class="select-container">
           <a-select v-model="selectedMainMission" placeholder="请选择主任务" :disabled="!selectedType">
@@ -30,7 +35,7 @@
         </div>
       </div>
 
-      <div v-if="taskAction === 'complete'" class="commuse-item">
+      <div class="commuse-item">
         <div class="text-slate-900 dark:text-slate-100">子任务:</div>
         <div class="select-container">
           <a-select v-model="selectedSubMission" placeholder="请选择子任务" :disabled="!selectedMainMission">
@@ -41,23 +46,30 @@
         </div>
       </div>
 
-      <!-- 新增任务操作选择框 -->
+      <div class="button-group">
+        <a-button type="primary" shape="round" size="large" @click="submitCommand('main')">完成主任务</a-button>
+        <a-button type="primary" shape="round" size="large" @click="submitCommand('sub')">完成子任务</a-button>
+      </div>
+    </div>
+
+    <!-- 重新接取任务表单 -->
+    <div v-if="taskAction === 'reaccept'">
       <div class="commuse-item">
-        <div class="text-slate-900 dark:text-slate-100">任务操作:</div>
+        <div class="text-slate-900 dark:text-slate-100">任务类型:</div>
         <div class="select-container">
-          <a-select v-model="taskAction" placeholder="请选择任务操作" @change="handleTaskActionChange">
-            <a-option value="complete">完成任务</a-option>
-            <a-option value="reaccept">重新接取任务</a-option>
+          <a-select v-model="selectedReacceptType" placeholder="请选择类型">
+            <a-option v-for="(type, index) in reacceptTypeOptions" :key="index" :value="type">
+              {{ type }}
+            </a-option>
           </a-select>
         </div>
       </div>
 
-      <!-- 只在选择重新接取任务时显示新的表单 -->
-      <div v-if="taskAction === 'reaccept'" class="commuse-item">
-        <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
+      <div class="commuse-item">
+        <div class="text-slate-900 dark:text-slate-100">主任务:</div>
         <div class="select-container">
-          <a-select v-model="selectedReacceptMission" placeholder="请选择重新接取的主任务">
-            <a-option v-for="(mission, index) in filteredMainMissions" :key="index" :value="mission.value">
+          <a-select v-model="selectedReacceptMission" placeholder="请选择主任务" :disabled="!selectedReacceptType">
+            <a-option v-for="(mission, index) in filteredReacceptMainMissions" :key="index" :value="mission.value">
               {{ mission.label }}
             </a-option>
           </a-select>
@@ -65,8 +77,6 @@
       </div>
 
       <div class="button-group">
-        <a-button type="primary" shape="round" size="large" @click="submitCommand('main')">完成主任务</a-button>
-        <a-button type="primary" shape="round" size="large" @click="submitCommand('sub')">完成子任务</a-button>
         <a-button type="default" shape="round" size="large" @click="reacceptTask">重新接取任务</a-button>
       </div>
     </div>
@@ -83,22 +93,20 @@ import SubMission from './json/SubMission.json';
 const showNotice = ref(true);
 const noticeContent = '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。';
 
+const taskAction = ref('complete');  // 默认选择完成任务
 const selectedType = ref(null);
 const selectedMainMission = ref(null);
 const selectedSubMission = ref(null);
-const selectedReacceptMission = ref(null);  // 重新接取任务的选择框
-const taskAction = ref('complete');  // 默认选择完成任务
+const selectedReacceptType = ref(null);  // 重新接取任务的任务类型
+const selectedReacceptMission = ref(null);  // 重新接取任务的主任务
 
 const typeOptions = ref([]);
 const mainMissionOptions = ref([]);
 const subMissionOptions = ref([]);
-const filteredMainMissions = ref([]);  // 过滤后的主任务选项
+const filteredReacceptMainMissions = ref([]);  // 过滤后的主任务选项
+const reacceptTypeOptions = ref([]);  // 重新接取任务的类型选项
 
 onMounted(async () => {
-  setTimeout(() => {
-    showNotice.value = true;
-  }, 1000);
-
   const uid = localStorage.getItem('uid');
   const apiAddress = import.meta.env.VITE_DHWT_API_SERVER + '/api/player';
 
@@ -146,7 +154,6 @@ onMounted(async () => {
       mainMissionOptions.value = categorizedMissions[newType] || [];
       selectedMainMission.value = null;
       selectedSubMission.value = null;
-      selectedReacceptMission.value = null;  // 清空重新接取任务选择
     });
 
     watch(selectedMainMission, (newMainMission) => {
@@ -159,8 +166,11 @@ onMounted(async () => {
     console.error(error);
   }
 
+  // 初始化重新接取任务的选项
+  reacceptTypeOptions.value = Object.keys(MainMission);
+
   // 仅在选择重新接取任务时才进行过滤
-  filteredMainMissions.value = Object.entries(MainMission)
+  filteredReacceptMainMissions.value = Object.entries(MainMission)
     .filter(([id, mission]) => mission.text && mission.text !== '触发器任务无文本')  // 过滤掉隐藏任务
     .map(([id, mission]) => ({
       value: id,
