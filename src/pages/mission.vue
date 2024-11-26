@@ -14,7 +14,7 @@
         <div class="select-container">
           <a-select v-model="taskAction" placeholder="请选择任务操作" @change="handleTaskActionChange">
             <a-option value="complete">完成任务</a-option>
-            <a-option value="reaccept">重新接取任务</a-option>
+            <a-option value="reaccept">接取任务</a-option>
           </a-select>
         </div>
       </div>
@@ -65,7 +65,7 @@
         <div class="commuse-item">
           <div class="text-slate-900 dark:text-slate-100">任务类型:</div>
           <div class="select-container">
-            <a-select v-model="selectedReacceptType" placeholder="请选择任务类型">
+            <a-select v-model="selectedReacceptType" placeholder="请选择任务类型" @change="filterMainMissions">
               <a-option v-for="(type, index) in reacceptTypeOptions" :key="index" :value="type">
                 {{ type }}
               </a-option>
@@ -76,7 +76,7 @@
         <div class="commuse-item">
           <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
           <div class="select-container">
-            <a-select v-model="selectedReacceptMission" placeholder="请选择重新接取的主任务">
+            <a-select v-model="selectedReacceptMission" placeholder="请选择要接取的主任务">
               <a-option v-for="(mission, index) in filteredMainMissions" :key="index" :value="mission.value">
                 {{ mission.label }}
               </a-option>
@@ -114,6 +114,17 @@ const mainMissionOptions = ref([]);
 const subMissionOptions = ref([]);
 const filteredMainMissions = ref([]);  // 过滤后的主任务选项
 const reacceptTypeOptions = ref([]);  // 重新接取任务的类型选项
+
+// 处理任务类型选择变化
+const filterMainMissions = (type) => {
+  // 根据任务类型过滤主任务
+  filteredMainMissions.value = Object.entries(MainMission)
+    .filter(([id, mission]) => mission.typename === type && mission.text && mission.text !== '触发器任务无文本')
+    .map(([id, mission]) => ({
+      value: id,
+      label: mission.text
+    }));
+};
 
 onMounted(async () => {
   setTimeout(() => {
@@ -179,7 +190,7 @@ onMounted(async () => {
     console.error(error);
   }
 
-  // 重新接取任务相关逻辑
+  // 获取主任务列表，并按类型分类
   filteredMainMissions.value = Object.entries(MainMission)
     .filter(([id, mission]) => mission.text && mission.text !== '触发器任务无文本')
     .map(([id, mission]) => ({
@@ -187,6 +198,7 @@ onMounted(async () => {
       label: mission.text
     }));
 
+  // 获取任务类型列表
   reacceptTypeOptions.value = [...new Set(filteredMainMissions.value.map(mission => MainMission[mission.value]?.typename))];  // 获取所有任务类型
 });
 
