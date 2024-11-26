@@ -18,7 +18,8 @@
         </div>
       </div>
 
-      <div class="commuse-item">
+      <!-- 只在选择完成任务时显示原始表单 -->
+      <div v-if="taskAction === 'complete'" class="commuse-item">
         <div class="text-slate-900 dark:text-slate-100">主任务:</div>
         <div class="select-container">
           <a-select v-model="selectedMainMission" placeholder="请选择主任务" :disabled="!selectedType">
@@ -29,7 +30,7 @@
         </div>
       </div>
 
-      <div class="commuse-item">
+      <div v-if="taskAction === 'complete'" class="commuse-item">
         <div class="text-slate-900 dark:text-slate-100">子任务:</div>
         <div class="select-container">
           <a-select v-model="selectedSubMission" placeholder="请选择子任务" :disabled="!selectedMainMission">
@@ -40,9 +41,33 @@
         </div>
       </div>
 
+      <!-- 新增任务操作选择框 -->
+      <div class="commuse-item">
+        <div class="text-slate-900 dark:text-slate-100">任务操作:</div>
+        <div class="select-container">
+          <a-select v-model="taskAction" placeholder="请选择任务操作" @change="handleTaskActionChange">
+            <a-option value="complete">完成任务</a-option>
+            <a-option value="reaccept">重新接取任务</a-option>
+          </a-select>
+        </div>
+      </div>
+
+      <!-- 只在选择重新接取任务时显示新的表单 -->
+      <div v-if="taskAction === 'reaccept'" class="commuse-item">
+        <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
+        <div class="select-container">
+          <a-select v-model="selectedReacceptMission" placeholder="请选择重新接取的主任务">
+            <a-option v-for="(mission, index) in filteredMainMissions" :key="index" :value="mission.value">
+              {{ mission.label }}
+            </a-option>
+          </a-select>
+        </div>
+      </div>
+
       <div class="button-group">
         <a-button type="primary" shape="round" size="large" @click="submitCommand('main')">完成主任务</a-button>
         <a-button type="primary" shape="round" size="large" @click="submitCommand('sub')">完成子任务</a-button>
+        <a-button type="default" shape="round" size="large" @click="reacceptTask">重新接取任务</a-button>
       </div>
     </div>
   </div>
@@ -61,10 +86,13 @@ const noticeContent = '梦乡公益服完全免费无任何形式收费，如果
 const selectedType = ref(null);
 const selectedMainMission = ref(null);
 const selectedSubMission = ref(null);
+const selectedReacceptMission = ref(null);  // 重新接取任务的选择框
+const taskAction = ref('complete');  // 默认选择完成任务
 
 const typeOptions = ref([]);
 const mainMissionOptions = ref([]);
 const subMissionOptions = ref([]);
+const filteredMainMissions = ref([]);  // 过滤后的主任务选项
 
 onMounted(async () => {
   setTimeout(() => {
@@ -118,6 +146,7 @@ onMounted(async () => {
       mainMissionOptions.value = categorizedMissions[newType] || [];
       selectedMainMission.value = null;
       selectedSubMission.value = null;
+      selectedReacceptMission.value = null;  // 清空重新接取任务选择
     });
 
     watch(selectedMainMission, (newMainMission) => {
@@ -129,8 +158,25 @@ onMounted(async () => {
     Message.error('请求失败');
     console.error(error);
   }
+
+  // 仅在选择重新接取任务时才进行过滤
+  filteredMainMissions.value = Object.entries(MainMission)
+    .filter(([id, mission]) => mission.text && mission.text !== '触发器任务无文本')  // 过滤掉隐藏任务
+    .map(([id, mission]) => ({
+      value: id,
+      label: mission.text
+    }));
 });
 
+// 处理任务操作切换
+const handleTaskActionChange = (value) => {
+  if (value === 'reaccept') {
+    selectedMainMission.value = null;
+    selectedSubMission.value = null;
+  }
+};
+
+// 提交命令：完成任务
 const submitCommand = async (type) => {
   const uid = localStorage.getItem('uid');
   const apiAddress = import.meta.env.VITE_DHWT_API_SERVER + '/api/submit';
@@ -167,6 +213,42 @@ const submitCommand = async (type) => {
       Message.success(`${type === 'main' ? '主任务' : '子任务'}完成成功`);
     } else {
       Message.error(`${type === 'main' ? '主任务' : '子任务'}完成失败`);
+    }
+  } catch (error) {
+    Message.error('请求失败');
+    console.error(error);
+  }
+};
+
+// 重新接取任务
+const reacceptTask = async () => {
+  const uid = localStorage.getItem('uid');
+  const apiAddress = import.meta.env.VITE_DHWT_API_SERVER + '/api/submit';
+
+  if (!uid) {
+    Message.info('用户未登录，请重试');
+    return;
+  }
+
+  if (!selectedReacceptMission.value) {
+    Message.info('请选择一个重新接取的任务');
+    return;
+  }
+
+  const command = `mission reaccept ${selectedReacceptMission.value}`;
+
+  try {
+    const response = await axios.post(apiAddress, { command, uid }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const responseData = response.data;
+    if (responseData.code === 0) {
+      Message.success('重新接取任务成功');
+    } else {
+      Message.error('重新接取任务失败');
     }
   } catch (error) {
     Message.error('请求失败');
