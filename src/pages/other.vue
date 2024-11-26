@@ -59,7 +59,7 @@ const options = reactive([
     value: '/giveall material',
   },
   {
-    title: '解锁所有任务',
+    title: '一键完成全部任务',
     value: '/unlockall mission',
   },
   {
