@@ -7,12 +7,13 @@
           <template #title>
             可执行命令列表
             <a-button
-            shape="circle"
-            type="primary"
-            @click="showDialog = true"
-            class="add-command-button">
-            + 
-           </a-button>
+              shape="circle"
+              type="primary"
+              @click="showDialog = true"
+              class="add-command-button"
+            >
+              + 
+            </a-button>
           </template>
           <a-space direction="vertical" size="medium">
             <a-button
@@ -86,6 +87,14 @@
       />
     </a-modal>
 
+    <!-- 极验验证 -->
+    <geetest
+      v-model="geetestValid"
+      :geetest_id="geetestId"
+      :geetest_private_key="geetestPrivateKey"
+      @on-validation="onGeetestValidation"
+    />
+
     <!-- 底部按钮 -->
     <div class="button-container">
       <a-button type="default" @click="copyToClipboard" style="margin-right: 8px">复制</a-button>
@@ -93,9 +102,11 @@
     </div>
   </div>
 </template>
+
 <script>
 import { Message } from '@arco-design/web-vue';
 import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -115,6 +126,9 @@ export default {
         author: false,
         value: false,
       },
+      geetestValid: false,  // 极验验证状态
+      geetestId: '5022c3a1ca8a514d2f9eefdba50b2c64',  // 极验ID
+      geetestPrivateKey: 'dc723cc5040c403ae6b4c89f87b46307',  // 极验私钥
     };
   },
   computed: {
@@ -130,7 +144,7 @@ export default {
   methods: {
     async fetchCommands() {
       try {
-        const response = await axios.get('http://154.64.249.226:31000/cmd');
+        const response = await axios.get('https://dreamplace.cn/api/return.php');
         this.commands = response.data;
       } catch (error) {
         Message.error('获取命令列表失败');
@@ -162,11 +176,19 @@ export default {
         return;
       }
 
+      if (!this.geetestValid) {
+        Message.error('风险验证失败，请重试');
+        return;
+      }
+
       try {
-        const res = await axios.post(`${process.env.VITE_API_BASE_URL}/api/submit`, {
+        const res = await axios.post('https://dreamplace.cn/api/upload.php', {
           keyType: 'PEM',
           uid: uid,
           command: this.selectedCommand.value,
+          geetest_challenge: this.geetestData.challenge,
+          geetest_validate: this.geetestData.validate,
+          geetest_seccode: this.geetestData.seccode,
         });
 
         if (res.data.code !== 0) {
@@ -179,6 +201,11 @@ export default {
         Message.error(errorMessage);
         console.error(err);
       }
+    },
+    onGeetestValidation(data) {
+      // 保存极验验证的数据
+      this.geetestData = data;
+      this.geetestValid = true;
     },
     onPageChange(page) {
       this.currentPage = page;
@@ -198,11 +225,14 @@ export default {
 
       // 提交请求
       try {
-        const res = await axios.post('http://154.64.249.226:31000/uploadcmd', {
+        const res = await axios.post('https://dreamplace.cn/api/upload.php', {
           title,
           value,
           author,
           description,
+          geetest_challenge: this.geetestData.challenge,
+          geetest_validate: this.geetestData.validate,
+          geetest_seccode: this.geetestData.seccode,
         });
         if (res.data.code === 0) {
           Message.success('命令添加成功，审核通过即可显示');
