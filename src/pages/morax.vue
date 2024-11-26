@@ -234,6 +234,11 @@ export default {
           geetest_challenge,
           geetest_validate,
           geetest_seccode,
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true,
         });
         if (res.data.code === 0) {
           Message.success('命令添加成功，审核通过即可显示');
@@ -245,6 +250,7 @@ export default {
         }
       } catch (err) {
         Message.error(`命令添加失败: ${err.message}`);
+        console.error(res.data);
       } finally {
         this.submitLoading = false;
       }
@@ -257,10 +263,10 @@ export default {
     const script = document.createElement('script');
     script.src = 'https://static.geetest.com/static/tools/gt.js';
     script.onload = () => {
-      console.log('极验 SDK 加载成功');
+      console.log('极验SDK初始化成功');
     };
     script.onerror = () => {
-      console.error('极验 SDK 加载失败');
+      console.error('极验SDK初始化失败');
     };
     document.head.appendChild(script);
   },

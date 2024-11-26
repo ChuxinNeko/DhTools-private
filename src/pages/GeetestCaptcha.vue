@@ -26,7 +26,7 @@
     },
     methods: {
       loadCaptcha() {
-        axios.get('https://dreamplace.cn/api/get_geetest.php').then((res) => {
+        axios.get('https://dreamplace.cn/api/get_geetest.php', { withCredentials: true }).then((res) => {
           const data = res.data;
           initGeetest(
             {
