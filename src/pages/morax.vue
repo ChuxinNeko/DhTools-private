@@ -88,7 +88,7 @@
       />
 
       <!-- 极验验证码组件 -->
-      <GeetestCaptcha :onSuccess="handleCaptchaSuccess" />
+      <GeetestCaptcha :onSuccess="handleCaptchaSuccess" :key="captchaKey" />
     </a-modal>
 
     <!-- 底部按钮 -->
@@ -130,11 +130,12 @@ export default {
         value: false,
       },
       submitLoading: false,
+      captchaKey: 0,
     };
   },
   computed: {
     filteredCommands() {
-      return this.commands.filter((command) => command.process);
+      return this.commands;
     },
     paginatedCommands() {
       const start = (this.currentPage - 1) * this.pageSize;
@@ -244,13 +245,14 @@ export default {
           Message.success('命令添加成功，审核通过即可显示');
           this.showDialog = false;
           this.form = { title: '', author: '', value: '', description: '', geetest_challenge: '', geetest_validate: '', geetest_seccode: '' };
+          this.captchaKey += 1;
           this.fetchCommands();
         } else {
           throw new Error(res.data.message);
         }
       } catch (err) {
         Message.error(`命令添加失败: ${err.message}`);
-        console.error(res.data);
+        console.error(err);
       } finally {
         this.submitLoading = false;
       }
