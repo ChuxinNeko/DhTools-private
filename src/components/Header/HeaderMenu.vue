@@ -49,6 +49,7 @@ const buttons = [
   { label: '角色', route: '/avatarall' },
   { label: '场景', route: '/scene' },
   { label: '任务', route: '/mission' },
+  { label: 'Morax广场', route: '/moraxlover' },
   { label: '服务器状态', route: '/information' },
   { label: '预设快捷指令', route: '/other' },
 ];

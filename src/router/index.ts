@@ -50,6 +50,10 @@ let constantRoutes = [
     component: () => import('@/pages/other.vue'),
   },
   {
+    path: '/moraxlover',
+    component: () => import('@/pages/morax.vue'),
+  },
+  {
     path: '/scene',
     component: () => import('@/pages/scene.vue'),
   },
