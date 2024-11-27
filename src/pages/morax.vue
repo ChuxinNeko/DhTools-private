@@ -234,8 +234,11 @@ export default {
           },
           (captchaObj) => {
             this.geetestCaptchaObj = captchaObj;
-
+            captchaObj.onError(() => {
+              console.error('验证码初始化失败，请检查服务器配置或极验服务状态');
+            });
             captchaObj.onReady(() => {
+              console.error('验证码就绪');
               captchaObj.verify(); // 显示验证码弹窗
             });
 
