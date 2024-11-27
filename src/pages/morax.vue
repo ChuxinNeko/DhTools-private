@@ -222,7 +222,9 @@ export default {
       try {
         const res = await axios.get('https://dreamplace.cn/api/get_geetest.php', { withCredentials: true });
         const data = res.data;
-
+        console.error(data.gt);
+        console.error(data.challenge);
+        console.error(data.success);
         initGeetest(
           {
             gt: data.gt,
