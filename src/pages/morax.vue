@@ -68,27 +68,27 @@
         placeholder="请输入外显标题"
         class="input-field"
         :status="formErrors.title ? 'error' : ''"
-        :help="formErrors.title ? '标题不能为空' : ''"
       />
       <a-input
         v-model="form.author"
         placeholder="请输入昵称"
         class="input-field"
         :status="formErrors.author ? 'error' : ''"
-        :help="formErrors.title ? '昵称不能为空' : ''"
       />
       <a-input
         v-model="form.value"
         placeholder="请输入指令"
         class="input-field"
         :status="formErrors.value ? 'error' : ''"
-        :help="formErrors.title ? '指令不能为空' : ''"
       />
       <a-input
         v-model="form.description"
         placeholder="请输入描述（可选）"
         class="input-field"
       />
+
+      <!-- 极验验证码组件 -->
+      <GeetestCaptcha :onSuccess="handleCaptchaSuccess" :key="captchaKey" />
     </a-modal>
 
     <!-- 底部按钮 -->
@@ -102,8 +102,12 @@
 <script>
 import { Message } from '@arco-design/web-vue';
 import axios from 'axios';
+import GeetestCaptcha from './GeetestCaptcha.vue'; // 引入极验验证码组件
 
 export default {
+  components: {
+    GeetestCaptcha,
+  },
   data() {
     return {
       commands: [],
@@ -127,8 +131,6 @@ export default {
       },
       submitLoading: false,
       captchaKey: 0,
-      geetestLoaded: false,
-      geetestCaptchaObj: null,
     };
   },
   computed: {
@@ -197,8 +199,13 @@ export default {
     onPageChange(page) {
       this.currentPage = page;
     },
+    handleCaptchaSuccess(result) {
+      this.form.geetest_challenge = result.geetest_challenge;
+      this.form.geetest_validate = result.geetest_validate;
+      this.form.geetest_seccode = result.geetest_seccode;
+    },
     async handleSubmit() {
-      const { title, author, value } = this.form;
+      const { title, author, value, description, geetest_challenge, geetest_validate, geetest_seccode } = this.form;
       // 表单校验
       this.formErrors = {
         title: !title,
@@ -210,75 +217,24 @@ export default {
         return;
       }
 
-      // 显示验证码
-      this.showCaptcha();
-    },
-    async showCaptcha() {
-      if (!this.geetestLoaded) {
-        Message.error('验证码加载失败，请稍后重试');
+      // 检查是否完成验证码
+      if (!geetest_challenge || !geetest_validate || !geetest_seccode) {
+        Message.error('请完成验证码验证');
         return;
       }
 
-      try {
-        const res = await axios.get('https://dreamplace.cn/api/get_geetest.php', { withCredentials: true });
-        const data = res.data;
-        console.error(data.gt);
-        console.error(data.challenge);
-        console.error(data.success);
-        initGeetest(
-          {
-            gt: data.gt,
-            challenge: data.challenge,
-            offline: !data.success,
-            new_captcha: data.new_captcha || false,
-            product: 'popup',
-            width: '100%',
-          },
-          (captchaObj) => {
-            this.geetestCaptchaObj = captchaObj;
-            window.geetestCaptchaObj = captchaObj;
-            captchaObj.onError(() => {
-              console.error('验证码初始化失败，请检查服务器配置或极验服务状态');
-            });
-            captchaObj.onReady(() => {
-              console.error('验证码就绪');
-              captchaObj.verify(); // 显示验证码弹窗
-            });
-
-            captchaObj.onSuccess(() => {
-              const result = captchaObj.getValidate();
-              if (!result) {
-                return;
-              }
-              this.form.geetest_challenge = result.geetest_challenge;
-              this.form.geetest_validate = result.geetest_validate;
-              this.form.geetest_seccode = result.geetest_seccode;
-
-              this.submitForm(); // 验证成功后提交表单
-            });
-
-            captchaObj.onError(() => {
-              Message.error('验证码加载失败，请重试');
-            });
-          }
-        );
-      } catch (error) {
-        console.error('加载验证码失败', error);
-        Message.error('加载验证码失败，请稍后重试');
-      }
-    },
-    async submitForm() {
       this.submitLoading = true;
 
+      // 提交请求
       try {
         const res = await axios.post('https://dreamplace.cn/api/upload.php', {
-          title: this.form.title,
-          value: this.form.value,
-          author: this.form.author,
-          description: this.form.description,
-          geetest_challenge: this.form.geetest_challenge,
-          geetest_validate: this.form.geetest_validate,
-          geetest_seccode: this.form.geetest_seccode,
+          title,
+          value,
+          author,
+          description,
+          geetest_challenge,
+          geetest_validate,
+          geetest_seccode,
         }, {
           headers: {
             'Content-Type': 'application/json',
@@ -288,21 +244,7 @@ export default {
         if (res.data.code === 0) {
           Message.success('命令添加成功，审核通过即可显示');
           this.showDialog = false;
-          // 重置表单
-          this.form = {
-            title: '',
-            author: '',
-            value: '',
-            description: '',
-            geetest_challenge: '',
-            geetest_validate: '',
-            geetest_seccode: '',
-          };
-          this.formErrors = {
-            title: false,
-            author: false,
-            value: false,
-          };
+          this.form = { title: '', author: '', value: '', description: '', geetest_challenge: '', geetest_validate: '', geetest_seccode: '' };
           this.captchaKey += 1;
           this.fetchCommands();
         } else {
@@ -324,7 +266,6 @@ export default {
     script.src = 'https://static.geetest.com/static/tools/gt.js';
     script.onload = () => {
       console.log('极验SDK初始化成功');
-      this.geetestLoaded = true;
     };
     script.onerror = () => {
       console.error('极验SDK初始化失败');
@@ -341,14 +282,6 @@ export default {
 
 .input-field {
   margin-bottom: 16px;
-}
-
-.input-field .arco-input-error {
-  border-color: #f5222d;
-}
-
-.input-field .arco-input-error:focus {
-  box-shadow: 0 0 0 2px rgba(245, 34, 45, 0.2);
 }
 
 .pagination-container {
