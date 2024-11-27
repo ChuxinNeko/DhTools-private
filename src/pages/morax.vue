@@ -179,7 +179,7 @@ export default {
       }
 
       try {
-        const res = await axios.post(`${process.env.VITE_API_BASE_URL}/api/submit`, {
+        const res = await axios.post(`${process.env.VITE_API_SERVER}/api/submit`, {
           keyType: 'PEM',
           uid: uid,
           command: this.selectedCommand.value,
