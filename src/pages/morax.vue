@@ -236,6 +236,7 @@ export default {
           },
           (captchaObj) => {
             this.geetestCaptchaObj = captchaObj;
+            window.geetestCaptchaObj = captchaObj;
             captchaObj.onError(() => {
               console.error('验证码初始化失败，请检查服务器配置或极验服务状态');
             });
