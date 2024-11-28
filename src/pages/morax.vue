@@ -102,7 +102,7 @@
 <script>
 import { Message } from '@arco-design/web-vue';
 import axios from 'axios';
-import GeetestCaptcha from './GeetestCaptcha.vue'; // 引入极验验证码组件
+import GeetestCaptcha from '@/components/GeetestCaptcha.vue';
 
 export default {
   components: {
