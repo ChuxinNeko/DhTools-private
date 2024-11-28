@@ -10,17 +10,27 @@
       </a-form-item>
       
       <a-form-item>
-        <a-button type="primary" shape="round" @click="sendVerificationCode">发送验证码</a-button>
+        <a-button type="primary" shape="round" @click="sendVerificationCode" :disabled="!captchaVerified">
+          发送验证码
+        </a-button>
       </a-form-item>
+      
       <a-form-item field="verificationCode" label="验证码">
         <a-input v-model="form.verificationCode" placeholder="请输入验证码..." />
       </a-form-item>
+
+      <!-- 极验验证码组件 -->
+      <a-form-item>
+        <GeetestCaptcha :onSuccess="handleCaptchaSuccess" :key="captchaKey" />
+      </a-form-item>
+
       <a-form-item>
         <a-space>
           <a-button type="primary" shape="round" size="large" html-type="submit">提交</a-button>
           <a-button type="primary" shape="round" size="large" html-type="reset" @click="handleReset">重置</a-button>
         </a-space>
       </a-form-item>
+
       <a-form-item label="response">
         <a-input v-model="responseData" :disabled="true" />
       </a-form-item>
@@ -32,6 +42,7 @@
 import { reactive, ref } from 'vue';
 import { Message } from '@arco-design/web-vue';
 import axios from 'axios';
+import GeetestCaptcha from '@/components/GeetestCaptcha.vue';
 
 const API_BASE_URL = import.meta.env.VITE_DHWT_API_SERVER;
 
@@ -45,8 +56,11 @@ const responseData = ref('');
 const showMessage = ref(false);
 const messageType = ref<'success' | 'info' | 'warning' | 'error'>('info');
 const message = ref('');
-const verificationCodes = new Map<string, { code: string; expiry: number }>(); // 存储验证码与UID的映射
+const verificationCodes = new Map<string, { code: string; expiry: number }>(); 
 const VERIFICATION_CODE_EXPIRY = 5 * 60 * 1000; // 验证码有效期5分钟
+
+const captchaVerified = ref(false);  // 标记验证码是否通过
+const captchaKey = ref(0);  // 用于触发验证码重新加载
 
 const generateRandomCode = () => {
   return Math.floor(10000 + Math.random() * 90000).toString(); // 生成5位数字
@@ -61,7 +75,6 @@ const sendVerificationCode = async () => {
 
   const generatedCode = generateRandomCode();
   const expiry = Date.now() + VERIFICATION_CODE_EXPIRY;
-  
   
   verificationCodes.set(uid, { code: generatedCode, expiry });
 
@@ -78,7 +91,6 @@ const sendVerificationCode = async () => {
   } catch (err) {
     let errorMessage = '验证码发送失败';
 
-    
     if (axios.isAxiosError(err)) {
       const responseData = err.response?.data as { message?: string }; 
       errorMessage = responseData?.message || errorMessage;
@@ -88,7 +100,6 @@ const sendVerificationCode = async () => {
     console.error(err);
   }
 };
-
 
 const handleReset = () => {
   form.keyType = "PEM";
@@ -127,6 +138,22 @@ const handleSubmit = (data: { values: Record<string, any>; errors: Record<string
   }
 };
 
+const handleCaptchaSuccess = (result: any) => {
+  // 极验验证成功时，将 captchaVerified 标记为 true
+  captchaVerified.value = true;
+  console.log('人机验证成功', result);
+};
+
+// 动态加载极验的 SDK
+const script = document.createElement('script');
+script.src = 'https://static.geetest.com/static/tools/gt.js';
+script.onload = () => {
+  console.log('极验SDK初始化成功');
+};
+script.onerror = () => {
+  console.error('极验SDK初始化失败');
+};
+document.head.appendChild(script);
 </script>
 
 <style lang="less" scoped>
