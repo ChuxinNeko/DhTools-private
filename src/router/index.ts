@@ -61,6 +61,22 @@ let constantRoutes = [
     path: '/chatlist',
     component: () => import('@/pages/chatlist.vue'),
   },
+  {
+    path: '/register',
+    component: () => import('@/components/register.vue'),
+  },
+  {
+    path: '/sign',
+    component: () => import('@/components/Signup.vue'),
+  },
+  {
+    path: '/opinion',
+    component: () => import('@/components/opinion.vue'),
+  },
+  {
+    path: '/feedback',
+    component: () => import('@/pages/feedback.vue'),
+  },
 
 ]
 

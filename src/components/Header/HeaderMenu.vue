@@ -52,6 +52,7 @@ const buttons = [
   { label: '男娘广场', route: '/moraxlover' },
   { label: '服务器状态', route: '/information' },
   { label: '预设快捷指令', route: '/other' },
+  { label: '反馈', route: '/feedback' },
 ];
 
 const selectedButton = ref(buttons.findIndex(button => button.route === route.path));
