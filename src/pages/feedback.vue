@@ -10,7 +10,7 @@
   
   <script setup>
   import Signup from '@/components/Signup.vue';
-  import Opinion from '@/components/Opinion.vue';
+  import Opinion from '@/components/opinion.vue';
   
   // 检查 localStorage 中是否有 email
   const isEmailStored = localStorage.getItem('email') !== null;
