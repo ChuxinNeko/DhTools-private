@@ -73,37 +73,19 @@
           </div>
         </div>
 
-        <div class="commuse-item">
-          <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
-          <div class="select-container">
-            <a-select v-model="selectedReacceptMission" placeholder="请选择要接取的主任务" @click="openSearchModal">
-              <a-option v-for="(mission, index) in filteredMainMissions" :key="index" :value="mission.value">
-                {{ mission.label }}
-              </a-option>
-            </a-select>
-          </div>
-        </div>
+      <div class="commuse-item">
+        <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
+        <TaskSearch
+          :tasks="filteredMainMissions"
+          @selectTask="handleTaskSelection"
+        />
+      </div>
 
-        <div class="button-group">
-          <a-button type="primary" shape="round" size="large" @click="reacceptTask">重新接取任务</a-button>
-        </div>
+      <div class="button-group">
+        <a-button type="primary" shape="round" size="large" @click="reacceptTask">重新接取任务</a-button>
+      </div>
       </div>
     </div>
-
-    <!-- 弹出搜索框Modal -->
-    <a-modal v-model:visible="isModalVisible" title="搜索任务" @cancel="closeSearchModal">
-      <a-input
-        v-model="searchQuery"
-        placeholder="输入任务名称进行搜索"
-        @input="searchTasks"
-      />
-      <a-list
-        :data-source="filteredSearchResults"
-        :render-item="renderSearchResult"
-        bordered
-        style="margin-top: 20px"
-      />
-    </a-modal>
   </div>
 </template>
 
@@ -113,6 +95,7 @@ import axios from 'axios';
 import { Message } from '@arco-design/web-vue';
 import MainMission from './json/MainMission.json';
 import SubMission from './json/SubMission.json';
+import TaskSearch from '@/components/TaskSearch.vue';
 
 const showNotice = ref(true);
 const noticeContent = '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。';
@@ -129,48 +112,6 @@ const mainMissionOptions = ref([]);
 const subMissionOptions = ref([]);
 const filteredMainMissions = ref([]);  // 过滤后的主任务选项
 const reacceptTypeOptions = ref([]);  // 重新接取任务的类型选项
-const isModalVisible = ref(false);  // 控制搜索框Modal显示
-const searchQuery = ref('');  // 搜索框的值
-const filteredSearchResults = ref([]);  // 搜索结果
-
-// 打开搜索框Modal
-const openSearchModal = () => {
-  isModalVisible.value = true;
-  searchQuery.value = '';  // 清空搜索框
-  filteredSearchResults.value = filteredMainMissions.value;  // 设置初始搜索结果为已筛选的任务列表
-};
-
-// 关闭搜索框Modal
-const closeSearchModal = () => {
-  isModalVisible.value = false;
-};
-
-// 执行任务搜索
-const searchTasks = () => {
-  if (!searchQuery.value.trim()) {
-    filteredSearchResults.value = filteredMainMissions.value;  // 如果没有输入搜索内容，显示所有已筛选的任务
-    return;
-  }
-
-  filteredSearchResults.value = filteredMainMissions.value.filter(mission =>
-    mission.label.toLowerCase().includes(searchQuery.value.toLowerCase())  // 根据输入的查询内容过滤任务
-  );
-};
-
-// 渲染搜索结果
-const renderSearchResult = (mission) => {
-  return {
-    component: 'a-list-item',
-    props: {
-      key: mission.value,
-      onClick: () => {
-        selectedReacceptMission.value = mission.value;  // 选择任务
-        closeSearchModal();  // 选择后关闭弹出框
-      },
-    },
-    children: [mission.label],
-  };
-};
 
 // 处理任务类型选择变化
 const filterMainMissions = (type) => {
@@ -265,6 +206,11 @@ const handleTaskActionChange = (value) => {
     selectedMainMission.value = null;
     selectedSubMission.value = null;
   }
+};
+
+// 响应选择的任务
+const handleTaskSelection = (task) => {
+  selectedReacceptMission.value = task.value;
 };
 
 // 提交命令：完成任务
