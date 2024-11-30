@@ -26,7 +26,10 @@ jobs:
 
       - name: Install js-cookie
         run: npm install js-cookie
-
+        
+      - name: Install morax
+        run: npm install pinyin-match
+        
       - name: Build project
         run: npm run build
 
