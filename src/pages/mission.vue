@@ -73,20 +73,17 @@
           </div>
         </div>
 
-        <div class="commuse-item">
-          <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
-          <div class="select-container">
-            <a-select v-model="selectedReacceptMission" placeholder="请选择要接取的主任务">
-              <a-option v-for="(mission, index) in filteredMainMissions" :key="index" :value="mission.value">
-                {{ mission.label }}
-              </a-option>
-            </a-select>
-          </div>
-        </div>
+      <div class="commuse-item">
+        <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
+        <TaskSearch
+          :tasks="filteredMainMissions"
+          @selectTask="handleTaskSelection"
+        />
+      </div>
 
-        <div class="button-group">
-          <a-button type="primary" shape="round" size="large" @click="reacceptTask">重新接取任务</a-button>
-        </div>
+      <div class="button-group">
+        <a-button type="primary" shape="round" size="large" @click="reacceptTask">重新接取任务</a-button>
+      </div>
       </div>
     </div>
   </div>
@@ -98,6 +95,7 @@ import axios from 'axios';
 import { Message } from '@arco-design/web-vue';
 import MainMission from './json/MainMission.json';
 import SubMission from './json/SubMission.json';
+import TaskSearch from '@/components/TaskSearch.vue';
 
 const showNotice = ref(true);
 const noticeContent = '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。';
@@ -208,6 +206,11 @@ const handleTaskActionChange = (value) => {
     selectedMainMission.value = null;
     selectedSubMission.value = null;
   }
+};
+
+// 响应选择的任务
+const handleTaskSelection = (task) => {
+  selectedReacceptMission.value = task.value;
 };
 
 // 提交命令：完成任务
