@@ -6,6 +6,7 @@
         @input="handleSearch"
       />
       <div class="task-list">
+        <!-- 列表组件，展示当前页面的任务 -->
         <a-list
           :data-source="currentPageTasks"
           :render-item="renderTask"
@@ -26,6 +27,7 @@
   import { ref, watch, computed } from "vue";
   import pinyin from "pinyin-match";
   
+  // 接收父组件传递的任务数据
   const props = defineProps({
     tasks: {
       type: Array,
@@ -35,12 +37,12 @@
   
   const emit = defineEmits(["selectTask"]);
   
-  const searchQuery = ref("");
-  const filteredTasks = ref([]);
-  const currentPage = ref(1);
-  const pageSize = ref(10);
+  const searchQuery = ref("");  // 存储搜索框的值
+  const filteredTasks = ref([]);  // 存储过滤后的任务列表
+  const currentPage = ref(1);  // 当前页码
+  const pageSize = ref(10);  // 每页任务数
   
-  // 监听任务数据或搜索关键字的变化
+  // 监听任务数据和搜索关键字的变化
   watch(
     () => [props.tasks, searchQuery.value],
     () => filterTasks()
@@ -60,7 +62,7 @@
         );
       });
     }
-    currentPage.value = 1; // 重置到第一页
+    currentPage.value = 1;  // 重置到第一页
   };
   
   // 当前页的任务
@@ -69,24 +71,23 @@
     return filteredTasks.value.slice(startIndex, startIndex + pageSize.value);
   });
   
-  // 渲染任务
-  const renderTask = (task) => (
-    <a-list-item
-      key={task.value}
-      @click={() => emit("selectTask", task)}
-    >
-      {task.label}
-    </a-list-item>
-  );
-  
-  // 处理分页切换
-  const handlePageChange = (page) => {
-    currentPage.value = page;
+  const renderTask = (task) => {
+    return {
+      component: 'a-list-item', // 指定要渲染的组件
+      props: {
+        key: task.value,  // 每个任务的唯一标识
+        onClick: () => emit("selectTask", task),  // 点击任务时触发 selectTask 事件
+      },
+      children: [task.label],  // 任务的名称
+    };
   };
   
-  // 搜索框输入事件
+  const handlePageChange = (page) => {
+    currentPage.value = page;  // 处理分页切换
+  };
+  
   const handleSearch = () => {
-    filterTasks();
+    filterTasks();  // 搜索框输入事件，重新过滤任务
   };
   </script>
   
