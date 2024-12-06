@@ -1,6 +1,9 @@
 <template>
   <div>
     <div :style="{ height: '20px' }"></div>
+    <a-alert closable>
+  如果使用遇到异常，<a href="https://status.cialloo.site/status/cxfm" target="_blank" style="color: #1890ff;">点击这里</a>查看服务状态。
+</a-alert>
     <a-form :model="form" class="form-container" @submit="handleSubmit">
       <a-form-item field="keyType" label="Key Type">
         <a-input v-model="form.keyType" placeholder="请输入Key Type..." />

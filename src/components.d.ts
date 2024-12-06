@@ -5,18 +5,16 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AAlert: typeof import('@arco-design/web-vue')['Alert']
     AButton: typeof import('@arco-design/web-vue')['Button']
-    ACard: typeof import('@arco-design/web-vue')['Card']
     ACheckbox: typeof import('@arco-design/web-vue')['Checkbox']
     ADrawer: typeof import('@arco-design/web-vue')['Drawer']
     AForm: typeof import('@arco-design/web-vue')['Form']
     AFormItem: typeof import('@arco-design/web-vue')['FormItem']
     AInput: typeof import('@arco-design/web-vue')['Input']
-    AInputPassword: typeof import('@arco-design/web-vue')['InputPassword']
     AModal: typeof import('@arco-design/web-vue')['Modal']
     APageHeader: typeof import('@arco-design/web-vue')['PageHeader']
     ASpace: typeof import('@arco-design/web-vue')['Space']
-    ATextarea: typeof import('@arco-design/web-vue')['Textarea']
     ClickEffect: typeof import('./components/ClickEffect.vue')['default']
     CxfmMenu: typeof import('./components/CxfmMenu.vue')['default']
     GeetestCaptcha: typeof import('./components/GeetestCaptcha.vue')['default']
