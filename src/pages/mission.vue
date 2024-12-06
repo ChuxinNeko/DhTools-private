@@ -95,7 +95,6 @@ import axios from 'axios';
 import { Message } from '@arco-design/web-vue';
 import MainMission from './json/MainMission.json';
 import SubMission from './json/SubMission.json';
-import TaskSearch from '@/components/TaskSearch.vue';
 
 const showNotice = ref(true);
 const noticeContent = '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。';
