@@ -1,6 +1,6 @@
 <template>
   <div class="header-menu">
-    <a-button  @click="handleClick" shape="round">
+    <a-button @click="handleClick" shape="round">
       <icon-list />
     </a-button>
     <a-button
@@ -10,6 +10,7 @@
       shape="round"
       @click="navigateTo(button.route)"
     >
+      <component :is="button.icon" style="margin-right: 8px;" />
       {{ button.label }}
     </a-button>
 
@@ -24,6 +25,7 @@
           block
           @click="navigateTo(button.route); handleOk()"
         >
+          <component :is="button.icon" style="margin-right: 8px;" />
           {{ button.label }}
         </a-button>
       </div>
@@ -34,26 +36,43 @@
 <script setup>
 import { ref, watchEffect } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import {
+  IconUser,
+  IconHome,
+  IconSettings,
+  IconTrophy,
+  IconStar,
+  IconArchive,
+  IconUserGroup,
+  IconCommon,
+  IconHeart,
+  IconCloud,
+  IconCommand,
+  IconMessage,
+  IconCodeBlock,
+} from '@arco-design/web-vue/es/icon';
+
 
 const router = useRouter();
 const route = useRoute();
 
 const visible = ref(false); // 控制抽屉的显示与隐藏
 const buttons = [
-  { label: '登录', route: '/' },
-  { label: '常用', route: '/commuse' },
-  { label: '自定义遗器', route: '/holyrelic' },
-  { label: '毕业遗器', route: '/holyrelic2' },
-  { label: '光锥', route: '/weapon' },
-  { label: '物品', route: '/thing' },
-  { label: '角色', route: '/avatarall' },
-  { label: '场景', route: '/scene' },
-  { label: '任务', route: '/mission' },
-  { label: '男娘广场', route: '/moraxlover' },
-  { label: '服务器状态', route: '/information' },
-  { label: '预设快捷指令', route: '/other' },
-  { label: '反馈', route: '/feedback' },
+  { label: '登录', route: '/', icon: IconUser },
+  { label: '常用', route: '/commuse', icon: IconHome },
+  { label: '自定义遗器', route: '/holyrelic', icon: IconSettings },
+  { label: '毕业遗器', route: '/holyrelic2', icon: IconTrophy },
+  { label: '光锥', route: '/weapon', icon: IconStar },
+  { label: '物品', route: '/thing', icon: IconArchive },
+  { label: '角色', route: '/avatarall', icon: IconUserGroup },
+  { label: '场景', route: '/scene', icon: IconCommon },
+  { label: '任务', route: '/mission', icon: IconCodeBlock },
+  { label: '男娘广场', route: '/moraxlover', icon: IconHeart },
+  { label: '服务器状态', route: '/information', icon: IconCloud },
+  { label: '预设快捷指令', route: '/other', icon: IconCommand },
+  { label: '反馈', route: '/feedback', icon: IconMessage },
 ];
+
 
 const selectedButton = ref(buttons.findIndex(button => button.route === route.path));
 
