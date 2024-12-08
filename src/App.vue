@@ -38,7 +38,9 @@ const message = ref('');
 
 onMounted(async () => {
   try {
-    const response = await axios.get('https://api.starxe.top/note');
+    
+    const randomQuery = `?_=${Date.now()}`;
+    const response = await axios.get(`https://api.starxe.top/note${randomQuery}`);
     if (response.data && response.data.message) {
       message.value = response.data.message;
     }
