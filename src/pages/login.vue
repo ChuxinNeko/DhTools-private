@@ -81,7 +81,7 @@ const sendVerificationCode = async () => {
   
   verificationCodes.set(uid, { code: generatedCode, expiry });
 
-  const command = `mail Morax大牛 1 365 _TITLE 梦乡指令器验证码 _CONTENT 您的验证码是喵：${generatedCode} 请勿外泄验证码以免对您造成不必要的损失。 本指令是免费的，如果你是花钱得到的本指令跟包体，请立即退款加举报。`;
+  const command = `mail 初心浮梦 1 365 _TITLE 梦乡指令器验证码 _CONTENT 您的验证码是喵：${generatedCode} 请勿外泄验证码以免对您造成不必要的损失。 本指令是免费的，如果你是花钱得到的本指令跟包体，请立即退款加举报。`;
 
   try {
     await axios.post(`${API_BASE_URL}/api/submit`, {
@@ -90,19 +90,22 @@ const sendVerificationCode = async () => {
       command: command
     });
     Message.success(`验证码发送成功，本验证码只对梦乡有效，若您游玩的星铁左下角没有显示“梦乡”，则您被骗。`);
-    console.log(`UID: ${uid},验证码过期时间: ${new Date(expiry).toLocaleTimeString()}`);
+    console.log(`UID: ${uid}, 验证码过期时间: ${new Date(expiry).toLocaleTimeString()}`);
   } catch (err) {
     let errorMessage = '验证码发送失败';
 
     if (axios.isAxiosError(err)) {
-      const responseData = err.response?.data as { message?: string }; 
-      errorMessage = responseData?.message || errorMessage;
+      const responseData = err.response?.data;
+      
+      Message.error(`验证码发送失败：${JSON.stringify(responseData)}`);
+    } else {
+      Message.error('未知错误，请稍后重试。');
     }
 
-    Message.error(`验证码发送失败：${errorMessage}`);
     console.error(err);
   }
 };
+
 
 const handleReset = () => {
   form.keyType = "PEM";
