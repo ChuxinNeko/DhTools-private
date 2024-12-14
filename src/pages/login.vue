@@ -81,7 +81,7 @@ const sendVerificationCode = async () => {
   
   verificationCodes.set(uid, { code: generatedCode, expiry });
 
-  const command = `mail 初心浮梦 1 365 _TITLE 梦乡指令器验证码 _CONTENT 您的验证码是喵：${generatedCode} 请勿外泄验证码以免对您造成不必要的损失。 本指令是免费的，如果你是花钱得到的本指令跟包体，请立即退款加举报。`;
+  const command = `mail 初心浮梦 1 365 _TITLE 梦乡指令器验证码 _CONTENT 初心浮梦温馨提示:您的验证码是喵：${generatedCode}`;
 
   try {
     await axios.post(`${API_BASE_URL}/api/submit`, {
