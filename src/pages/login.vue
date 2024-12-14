@@ -49,99 +49,99 @@ import GeetestCaptcha from '@/components/GeetestCaptcha.vue';
 
 const API_BASE_URL = import.meta.env.VITE_DHWT_API_SERVER;
 
-Const 形式=反应的({
-  KeyType:'PEM',
-  UID:'',
-  verificationCode:''
+const form = reactive({
+  keyType: 'PEM',
+  uid: '',
+  verificationCode: ''
 });
 
-Const ResponseData=裁判('');
-Const ShowMessage=裁判(假的);
-Const messageType=ref<'成功'|'信息'|'警告'|'错误'>('信息');
-Const 消息=裁判('');
-Const 验证代码=新的map<string，{ 代码：string；到期：number}>();
-Const verification_CODE_EXPIRY=5*60*1000;// 验证码有效期5分钟
+const responseData = ref('');
+const showMessage = ref(false);
+const messageType = ref<'success' | 'info' | 'warning' | 'error'>('info');
+const message = ref('');
+const verificationCodes = new Map<string, { code: string; expiry: number }>(); 
+const VERIFICATION_CODE_EXPIRY = 5 * 60 * 1000; // 验证码有效期5分钟
 
-Const captchaVerified=裁判(假的);// 标记验证码是否通过
-Const captchaKey=裁判(0);// 用于触发验证码重新加载
+const captchaVerified = ref(false);  // 标记验证码是否通过
+const captchaKey = ref(0);  // 用于触发验证码重新加载
 
-Const generateRandomCode=()=>{
-  返回数学。地板(10000+数学。随机()*90000).toString();// 生成5位数字
+const generateRandomCode = () => {
+  return Math.floor(10000 + Math.random() * 90000).toString(); // 生成5位数字
 };
 
-Const sendVerificationCode=异步 ()=>{
-  Const UID=表格。UID;
-  如果 (！UID) {
-消息。误差('请填写UID。');
-    返回;
+const sendVerificationCode = async () => {
+  const uid = form.uid;
+  if (!uid) {
+    Message.error('请填写 UID。');
+    return;
   }
 
-  Const GeneratedCode=generateRandomCode();
-  Const 到期=日期。现在()+VERIFICATION_CODE_EXPIRY；
+  const generatedCode = generateRandomCode();
+  const expiry = Date.now() + VERIFICATION_CODE_EXPIRY;
   
-验证代码。设置(UID，{ 代码：GeneratedCode，到期 });
+  verificationCodes.set(uid, { code: generatedCode, expiry });
 
-  Const 命令='邮件管理员1365_TITLE梦乡指令器验证码_内容您的验证码是喵：${GeneratedCode}.本验证码只对应梦乡星铁服有效，若您游玩的星铁左下角没有显示“梦乡“，对此您也用不了我们的指令器。 请勿外泄验证码以免对您造成不必要的损失。 本指令是免费的，如果你是花钱得到的本指令跟包体，请立即退款加举报。 `;
+  const command = `mail Morax大牛 1 365 _TITLE 梦乡指令器验证码 _CONTENT 您的验证码是喵：${generatedCode} 请勿外泄验证码以免对您造成不必要的损失。 本指令是免费的，如果你是花钱得到的本指令跟包体，请立即退款加举报。`;
 
-  尝试 {
-    等候Axios。邮件(`${API_BASE_URL}/api/Submit',{
-      KeyType：窗体。KeyType,
-      UID：uid，
-      命令：命令
+  try {
+    await axios.post(`${API_BASE_URL}/api/submit`, {
+      keyType: form.keyType,
+      uid: uid,
+      command: command
     });
-消息。成功(`验证码发送成功，有效期为5分钟。 `);
-控制台。日志('UID：${UID},验证码过期时间:${新的日期(到期).toLocaleTimeString()}`);
-  } 赶上 (犯错) {
-    让 ErrorMessage='验证码发送失败';
+    Message.success(`验证码发送成功，本验证码只对梦乡有效，若您游玩的星铁左下角没有显示“梦乡”，则您被骗。`);
+    console.log(`UID: ${uid},验证码过期时间: ${new Date(expiry).toLocaleTimeString()}`);
+  } catch (err) {
+    let errorMessage = '验证码发送失败';
 
-    如果 (Axios。isAxiosError(犯错)) {
-      Const ResponseData=err.响应?.数据 作为 { 消息？：字符串};
-ErrorMessage=ResponseData？。消息||errorMessage；
+    if (axios.isAxiosError(err)) {
+      const responseData = err.response?.data as { message?: string }; 
+      errorMessage = responseData?.message || errorMessage;
     }
 
-消息。误差(`验证码发送失败：${ErrorMessage}`);
-控制台。误差(犯错);
+    Message.error(`验证码发送失败：${errorMessage}`);
+    console.error(err);
   }
 };
 
-Const handleReset=()=>{
-形式。KeyType="PEM";
-形式。UID=“”;
-形式。verificationCode=“”;
-响应数据。价值=“”;
-ShowMessage。价值=假的;
-messageType。价值='信息';
-消息。价值=“”;
+const handleReset = () => {
+  form.keyType = "PEM";
+  form.uid = "";
+  form.verificationCode = "";
+  responseData.value = "";
+  showMessage.value = false;
+  messageType.value = 'info';
+  message.value = "";
 };
 
-Const handleSubmit=(数据:{ 值：记录<string，any>；错误：记录<string，any>|未定义})=>{
-  Const { 值 }=数据；
+const handleSubmit = (data: { values: Record<string, any>; errors: Record<string, any> | undefined }) => {
+  const { values } = data;
 
-  Const UID=值。UID;
-  Const inputCode=值。verificationCode;
+  const uid = values.uid;
+  const inputCode = values.verificationCode;
 
-  //验证UID和验证码
-  Const 储存=verificationCodes。得到(UID);
-  如果 (储存) {
-    如果 (储存。代码===输入代码和日期。现在()<已存储。到期) {
-响应数据。价值='验证成功';
-ShowMessage。价值=正确;
-messageType。价值='成功';
-消息。价值='验证成功';
-消息。成功('验证成功');
+  // 验证 UID 和验证码
+  const stored = verificationCodes.get(uid);
+  if (stored) {
+    if (stored.code === inputCode && Date.now() < stored.expiry) {
+      responseData.value = '验证成功';
+      showMessage.value = true;
+      messageType.value = 'success';
+      message.value = '验证成功';
+      Message.success('验证成功');
       
-      //验证成功，将UID存入缓存
-localStorage。setitem('uid'，uid);
-控制台。日志('存储的UID：'，localStorage。getitem('uid'));
-    } 其他 {
-消息。误差('验证码错误或已过期，请重新输入。 ');
+      // 验证成功，将 UID 存入缓存
+      localStorage.setItem('uid', uid);
+      console.log('UID stored:', localStorage.getItem('uid'));
+    } else {
+      Message.error('验证码错误或已过期，请重新输入。');
     }
-  } 其他 {
-消息。误差('UID不存在或验证码未生成.');
+  } else {
+    Message.error('UID 不存在或验证码未生成。');
   }
 };
 
-Const handleCaptchaSuccess=(结果：任意)=>{
+const handleCaptchaSuccess = (result: any) => {
   // 极验验证成功时，将 captchaVerified 标记为 true
   captchaVerified.value = true;
   console.log('人机验证成功', result);

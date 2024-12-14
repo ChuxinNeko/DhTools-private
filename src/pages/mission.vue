@@ -57,6 +57,9 @@
         <div class="button-group">
           <a-button type="primary" shape="round" size="large" @click="submitCommand('main')">完成主任务</a-button>
           <a-button type="primary" shape="round" size="large" @click="submitCommand('sub')">完成子任务</a-button>
+          <a-button type="primary" shape="round" size="large" @click="showFinishAllWindow = true">
+            一键完成所有剧情
+          </a-button>
         </div>
       </div>
 
@@ -73,19 +76,26 @@
           </div>
         </div>
 
-      <div class="commuse-item">
-        <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
-        <TaskSearch
-          :tasks="filteredMainMissions"
-          @selectTask="handleTaskSelection"
-        />
-      </div>
+        <div class="commuse-item">
+          <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
+          <TaskSearch
+            :tasks="filteredMainMissions"
+            @selectTask="handleTaskSelection"
+          />
+        </div>
 
-      <div class="button-group">
-        <a-button type="primary" shape="round" size="large" @click="reacceptTask">重新接取任务</a-button>
-      </div>
+        <div class="button-group">
+          <a-button type="primary" shape="round" size="large" @click="reacceptTask">重新接取任务</a-button>
+        </div>
       </div>
     </div>
+
+    <!-- 一键完成所有剧情的二次确认弹窗 -->
+    <a-modal v-model:visible="showFinishAllWindow" title="确认操作" ok-text="确认" cancel-text="取消" @ok="confirmFinishAll" @cancel="cancelFinishAll">
+      <template #default>
+        <p>此操作将完成所有剧情任务，可能导致后续体验受到影响。确定要继续吗？</p>
+      </template>
+    </a-modal>
   </div>
 </template>
 
@@ -112,9 +122,9 @@ const subMissionOptions = ref([]);
 const filteredMainMissions = ref([]);  // 过滤后的主任务选项
 const reacceptTypeOptions = ref([]);  // 重新接取任务的类型选项
 
-// 处理任务类型选择变化
+const showFinishAllWindow = ref(false);
+
 const filterMainMissions = (type) => {
-  // 根据任务类型过滤主任务
   filteredMainMissions.value = Object.entries(MainMission)
     .filter(([id, mission]) => mission.typename === type && mission.text && mission.text !== '触发器任务无文本')
     .map(([id, mission]) => ({
@@ -187,7 +197,7 @@ onMounted(async () => {
     console.error(error);
   }
 
-  // 获取主任务列表，并按类型分类
+  // 获取所有主任务列表(用于重新接取)
   filteredMainMissions.value = Object.entries(MainMission)
     .filter(([id, mission]) => mission.text && mission.text !== '触发器任务无文本')
     .map(([id, mission]) => ({
@@ -195,11 +205,10 @@ onMounted(async () => {
       label: mission.text
     }));
 
-  // 获取任务类型列表
-  reacceptTypeOptions.value = [...new Set(filteredMainMissions.value.map(mission => MainMission[mission.value]?.typename))];  // 获取所有任务类型
+  // 获取重新接取任务的任务类型列表
+  reacceptTypeOptions.value = [...new Set(filteredMainMissions.value.map(mission => MainMission[mission.value]?.typename))]; 
 });
 
-// 处理任务操作切换
 const handleTaskActionChange = (value) => {
   if (value === 'reaccept') {
     selectedMainMission.value = null;
@@ -207,12 +216,10 @@ const handleTaskActionChange = (value) => {
   }
 };
 
-// 响应选择的任务
 const handleTaskSelection = (task) => {
   selectedReacceptMission.value = task.value;
 };
 
-// 提交命令：完成任务
 const submitCommand = async (type) => {
   const uid = localStorage.getItem('uid');
   const apiAddress = import.meta.env.VITE_DHWT_API_SERVER + '/api/submit';
@@ -235,6 +242,8 @@ const submitCommand = async (type) => {
       return;
     }
     command = `mission finish ${selectedSubMission.value}`;
+  } else if (type === 'all') {
+    command = `unlockall mission`;
   }
 
   try {
@@ -246,9 +255,13 @@ const submitCommand = async (type) => {
 
     const responseData = response.data;
     if (responseData.code === 0) {
-      Message.success(`${type === 'main' ? '主任务' : '子任务'}完成成功`);
+      if (type === 'all') {
+        Message.success('已一键完成所有剧情任务');
+      } else {
+        Message.success(`${type === 'main' ? '主任务' : '子任务'}完成成功`);
+      }
     } else {
-      Message.error(`${type === 'main' ? '主任务' : '子任务'}完成失败`);
+      Message.error(`${type === 'all' ? '一键完成所有剧情' : type === 'main' ? '主任务' : '子任务'}完成失败`);
     }
   } catch (error) {
     Message.error('请求失败');
@@ -256,7 +269,6 @@ const submitCommand = async (type) => {
   }
 };
 
-// 重新接取任务
 const reacceptTask = async () => {
   const uid = localStorage.getItem('uid');
   const apiAddress = import.meta.env.VITE_DHWT_API_SERVER + '/api/submit';
@@ -290,6 +302,16 @@ const reacceptTask = async () => {
     Message.error('请求失败');
     console.error(error);
   }
+};
+
+// 确认一键完成所有剧情
+const confirmFinishAll = () => {
+  submitCommand('all');
+  showFinishAllWindow.value = false;
+};
+
+const cancelFinishAll = () => {
+  showFinishAllWindow.value = false;
 };
 </script>
 
