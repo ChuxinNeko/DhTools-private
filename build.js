@@ -8,16 +8,20 @@ console.log(gradient.retro('✨✨Starting production build...'));
 
 const buildProcess = exec('vite build --mode production', (error, stdout, stderr) => {
   if (error) {
-    console.error(`Build failed with error: ${stderr}`);
+    console.error(gradient.passion(`❌ 构建失败: ${stderr}`));
     process.exit(1);
   }
 
- 
   const endTime = new Date();
-  const buildTime = (endTime - startTime) / 1000;
+  const buildTime = ((endTime - startTime) / 1000).toFixed(2);
+  const memoryUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
 
   console.log(stdout);
-  console.log(gradient.retro(`🎉打包完成，用时 ${buildTime} 秒，击败了全国99%的用户`));
+  console.log(gradient.retro(`
+✨ 构建成功！
+🕒 构建用时：${buildTime} 秒
+💾 内存占用：${memoryUsage} MB
+  `));
   process.exit(0);
 });
 
