@@ -101,17 +101,39 @@ watchEffect(() => {
 <style scoped>
 .header-menu {
   display: flex;
-  overflow-x: auto; /* 允许横向滚动 */
-  overflow-y: hidden; /* 隐藏纵向滚动条 */
-  white-space: nowrap; /* 防止换行 */
-  padding: 10px; /* 添加一些内边距 */
-  height: 50px; /* 设置一个固定的高度，避免出现纵向滚动条 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 10px;
+  height: 50px;
   gap: 20px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='dark'] .header-menu {
+  background-color: rgba(0, 0, 0, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-menu::-webkit-scrollbar {
+  height: 3px;
+}
+
+.header-menu::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.header-menu::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 
 .drawer-content {
   display: flex;
-  flex-direction: column; /* 竖向排列按钮 */
-  gap: 10px; /* 每个按钮之间的间距 */
+  flex-direction: column;
+  gap: 10px;
 }
 </style>

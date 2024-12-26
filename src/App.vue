@@ -3,9 +3,7 @@
   <Watermark />
   <HeaderTop class="header-top" />
   <HeaderMenu class="header-menu" />
-  <div class="scroll-notice" v-if="message">
-    <marquee>{{ message }}</marquee>
-  </div>
+
 
   <div class="main-content">
     <router-view></router-view>

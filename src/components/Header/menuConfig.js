@@ -1,0 +1,31 @@
+import {
+  IconUser,
+  IconHome,
+  IconSettings,
+  IconTrophy,
+  IconStar,
+  IconArchive,
+  IconUserGroup,
+  IconCommon,
+  IconHeart,
+  IconCloud,
+  IconCommand,
+  IconMessage,
+  IconCodeBlock,
+} from '@arco-design/web-vue/es/icon';
+
+export const buttons = [
+  { label: '登录', route: '/', icon: IconUser },
+  { label: '常用', route: '/commuse', icon: IconHome },
+  { label: '自定义遗器', route: '/holyrelic', icon: IconSettings },
+  { label: '毕业遗器', route: '/holyrelic2', icon: IconTrophy },
+  { label: '光锥', route: '/weapon', icon: IconStar },
+  { label: '物品', route: '/thing', icon: IconArchive },
+  { label: '角色', route: '/avatarall', icon: IconUserGroup },
+  { label: '场景', route: '/scene', icon: IconCommon },
+  { label: '任务', route: '/mission', icon: IconCodeBlock },
+  { label: '男娘广场', route: '/moraxlover', icon: IconHeart },
+  { label: '服务器状态', route: '/information', icon: IconCloud },
+  { label: '预设快捷指令', route: '/other', icon: IconCommand },
+  { label: '反馈', route: '/feedback', icon: IconMessage },
+];

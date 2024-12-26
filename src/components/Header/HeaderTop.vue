@@ -3,6 +3,7 @@
     <a-page-header
       :style="{ width: '100vw', background: theme === 'dark' ? 'black' : 'white' }"
       title="DanhengWebTools"
+      subtitle="梦乡特供版"
       :show-back="false"
     >
       <template #extra>
