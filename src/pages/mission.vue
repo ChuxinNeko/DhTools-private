@@ -68,7 +68,7 @@
         <div class="commuse-item">
           <div class="text-slate-900 dark:text-slate-100">任务类型:</div>
           <div class="select-container">
-            <a-select v-model="selectedReacceptType" placeholder="请选择任务类型" @change="filterMainMissions">
+            <a-select v-model="selectedReacceptType" placeholder="请选择任务类型" @change="(val) => filterMainMissions(val)">
               <a-option v-for="(type, index) in reacceptTypeOptions" :key="index" :value="type">
                 {{ type }}
               </a-option>
