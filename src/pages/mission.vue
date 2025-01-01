@@ -77,11 +77,14 @@
         </div>
 
         <div class="commuse-item">
-          <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
-          <TaskSearch
-            :tasks="filteredMainMissions"
-            @selectTask="handleTaskSelection"
-          />
+            <div class="text-slate-900 dark:text-slate-100">重新接取的主任务:</div>
+            <div class="select-container">
+            <a-select v-model="selectedReacceptMission" placeholder="请选择要重新接取的主任务" show-search :filter-option="true" style="width: 100%">
+                <a-option v-for="(mission, index) in filteredMainMissions" :key="index" :value="mission.value">
+                {{ mission.label }}
+                </a-option>
+            </a-select>
+            </div>
         </div>
 
         <div class="button-group">
