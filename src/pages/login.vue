@@ -2,7 +2,7 @@
   <div>
     <div :style="{ height: '20px' }"></div>
     <a-alert closable>
-  如果使用遇到异常，<a href="https://status.cialloo.site/status/cxfm" target="_blank" style="color: #1890ff;">点击这里</a>查看服务状态。
+  需要先在QQ群内绑定账号才能使用发送验证码等后续功能！
 </a-alert>
     <a-form :model="form" class="form-container" @submit="handleSubmit">
       <a-form-item field="keyType" label="Key Type">
@@ -13,18 +13,13 @@
       </a-form-item>
       
       <a-form-item>
-        <a-button type="primary" shape="round" @click="sendVerificationCode" :disabled="!captchaVerified">
+        <a-button type="primary" shape="round" @click="startVerificationProcess">
           发送验证码
         </a-button>
       </a-form-item>
       
       <a-form-item field="verificationCode" label="验证码">
         <a-input v-model="form.verificationCode" placeholder="请输入验证码..." />
-      </a-form-item>
-
-      <!-- 极验验证码组件 -->
-      <a-form-item>
-        <GeetestCaptcha :onSuccess="handleCaptchaSuccess" :key="captchaKey" />
       </a-form-item>
 
       <a-form-item>
@@ -38,6 +33,8 @@
         <a-input v-model="responseData" :disabled="true" />
       </a-form-item>
     </a-form>
+    <!-- The Geetest component is now controlled programmatically. -->
+    <GeetestCaptcha ref="geetestCaptchaRef" :onSuccess="handleCaptchaSuccess" :key="captchaKey" />
   </div>
 </template>
 
@@ -62,11 +59,19 @@ const message = ref('');
 const verificationCodes = new Map<string, { code: string; expiry: number }>(); 
 const VERIFICATION_CODE_EXPIRY = 5 * 60 * 1000; // 验证码有效期5分钟
 
-const captchaVerified = ref(false);  // 标记验证码是否通过
-const captchaKey = ref(0);  // 用于触发验证码重新加载
+const geetestCaptchaRef = ref<InstanceType<typeof GeetestCaptcha> | null>(null);
+const captchaKey = ref(0); // Used to force re-render of captcha component if needed.
 
 const generateRandomCode = () => {
   return Math.floor(10000 + Math.random() * 90000).toString(); // 生成5位数字
+};
+
+const startVerificationProcess = () => {
+  if (!form.uid) {
+    Message.error('请填写 UID。');
+    return;
+  }
+  geetestCaptchaRef.value?.startVerification();
 };
 
 const sendVerificationCode = async () => {
@@ -81,15 +86,18 @@ const sendVerificationCode = async () => {
   
   verificationCodes.set(uid, { code: generatedCode, expiry });
 
-  const command = `mail 初心浮梦 1 365 _TITLE 梦乡指令器验证码 _CONTENT 初心浮梦温馨提示:您的验证码是喵：${generatedCode}`;
+  const command = `mail 初心疯魔 1 365 _TITLE 梦乡指令器验证码 _CONTENT 初心疯魔温馨提示:您的验证码是喵：${generatedCode}`;
 
   try {
-    await axios.post(`${API_BASE_URL}/api/submit`, {
+    const response = await axios.post(`${API_BASE_URL}/api/submit`, {
       keyType: form.keyType,
       uid: uid,
       command: command
     });
-    Message.success(`验证码发送成功，本验证码只对梦乡有效，若您游玩的星铁左下角没有显示“梦乡”，则您被骗。`);
+
+    const backendMessage = response.data?.data?.message || '';
+    Message.info(`${backendMessage}本验证码只对梦乡有效，若您游玩的星铁左下角没有显示“梦乡”，则您被骗。`);
+    
     console.log(`UID: ${uid}, 验证码过期时间: ${new Date(expiry).toLocaleTimeString()}`);
   } catch (err) {
     let errorMessage = '验证码发送失败';
@@ -145,9 +153,9 @@ const handleSubmit = (data: { values: Record<string, any>; errors: Record<string
 };
 
 const handleCaptchaSuccess = (result: any) => {
-  // 极验验证成功时，将 captchaVerified 标记为 true
-  captchaVerified.value = true;
   console.log('人机验证成功', result);
+  // After human verification is successful, automatically send the verification code.
+  sendVerificationCode();
 };
 
 // 动态加载极验的 SDK
