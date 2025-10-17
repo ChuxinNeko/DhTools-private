@@ -53,6 +53,24 @@ import { Message } from '@arco-design/web-vue'
 import JSEncrypt from 'jsencrypt';
 import axios from 'axios'
 
+// 静态导入所有JSON文件
+import headData from './json/head.json'
+import thingData from './json/thing.json'
+import weaponData from './json/weapon.json'
+import foodData from './json/food.json'
+import materialData from './json/material.json'
+import avatarData from './json/avatar.json'
+import chatData from './json/chat.json'
+import avatarskinData from './json/avatarskin.json'
+import phonethemeData from './json/phonetheme.json'
+import pamskinData from './json/pamskin.json'
+import phonecaseData from './json/phonecase.json'
+import avatarexpData from './json/avatarexp.json'
+import avatarrankData from './json/avatarrank.json'
+import equipmentexpData from './json/equipmentexp.json'
+import petData from './json/pet.json'
+import medalData from './json/medal.json'
+
 const API_BASE_URL = import.meta.env.VITE_DHWT_API_SERVER;
 const { text, isSupported, copy } = useClipboard()
 const appStore = useAppStore()
@@ -112,39 +130,50 @@ const commandValue = computed(() => {
   return `${commandType.value} ${selectedItem.value} x${num.value}`
 })
 
+// 初始化数据
+const initializeData = () => {
+  // 静态导入的数据映射
+  const staticDataMap = {
+    "HeadIcon": headData,
+    "Virtual": thingData,
+    "Equipment": weaponData,
+    "Food": foodData,
+    "Material": materialData,
+    "AvatarCard": avatarData,
+    "ChatBubble": chatData,
+    "AvatarSkin": avatarskinData,
+    "PhoneTheme": phonethemeData,
+    "PamSkin": pamskinData,
+    "PhoneCase": phonecaseData,
+    "AvatarExp": avatarexpData,
+    "AvatarRank": avatarrankData,
+    "EquipmentExp": equipmentexpData,
+    "NormalPet": petData,
+    "RogueMedal": medalData,
+  }
+
+  // 填充itemsData
+  Object.keys(category_mapping).forEach(category => {
+    const fileName = category_mapping[category as keyof typeof category_mapping]
+    const dataKey = Object.keys(staticDataMap).find(key => 
+      category_mapping[key as keyof typeof category_mapping] === fileName
+    )
+    
+    if (dataKey) {
+      itemsData[category] = staticDataMap[dataKey as keyof typeof staticDataMap] || []
+      console.log(`加载类别 ${category} 成功，共 ${itemsData[category].length} 个物品`)
+    } else {
+      itemsData[category] = []
+      console.warn(`未找到类别 ${category} 对应的数据`)
+    }
+  })
+}
+
 // 类别选项
 categoryOptions.value = Object.keys(category_mapping).map(key => ({
   value: key,
   label: categoryNames[key as keyof typeof categoryNames] || key
 }))
-
-// 加载JSON文件
-const loadJsonFile = async (fileName: string): Promise<any[]> => {
-  try {
-    const module = await import(`./json/${fileName}`)
-    return module.default || module
-  } catch (error) {
-    console.error(`加载文件 ${fileName} 失败:`, error)
-    return []
-  }
-}
-
-// 初始化加载所有类别数据
-const loadAllCategories = async () => {
-  const loadPromises = Object.entries(category_mapping).map(async ([category, fileName]) => {
-    try {
-      const data = await loadJsonFile(fileName)
-      itemsData[category] = data
-      console.log(`加载类别 ${category} 成功，共 ${data.length} 个物品`)
-    } catch (error) {
-      console.error(`加载类别 ${category} 失败:`, error)
-      itemsData[category] = []
-    }
-  })
-  
-  await Promise.all(loadPromises)
-  console.log('所有类别数据加载完成')
-}
 
 // 处理类别变化
 const handleCategoryChange = (category: string) => {
@@ -206,13 +235,13 @@ const showNotice = ref(true)
 const noticeContent = '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。'
 
 // 在页面加载时初始化数据
-onMounted(async () => {
+onMounted(() => {
   setTimeout(() => {
     showNotice.value = true
   }, 1000)
   
-  // 加载所有类别数据
-  await loadAllCategories()
+  // 初始化数据
+  initializeData()
   
   // 默认选择第一个类别
   if (categoryOptions.value.length > 0) {
