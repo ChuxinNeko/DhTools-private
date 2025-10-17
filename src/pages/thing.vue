@@ -7,16 +7,37 @@
 
     <!-- 原有的组件内容 -->
     <div class="commuse">
+      <!-- 类别选择 -->
+      <div class="commuse-item">
+        <div class="text-slate-900 dark:text-slate-100"> 类别: </div>
+        <a-select 
+          allow-search 
+          v-model="selectedCategory" 
+          :options="categoryOptions" 
+          placeholder="请选择类别" 
+          @change="handleCategoryChange"
+        />
+      </div>
+      
+      <!-- 物品选择 -->
       <div class="commuse-item">
         <div class="text-slate-900 dark:text-slate-100"> 物品: </div>
-        <a-select allow-search v-model="value2" :options="options" placeholder="请输入物品" filterable />
+        <a-select 
+          allow-search 
+          v-model="selectedItem" 
+          :options="currentItems" 
+          placeholder="请选择物品" 
+          filterable 
+        />
       </div>
+      
       <div class="commuse-item">
         <div class="text-slate-900 dark:text-slate-100"> 数量: </div>
         <a-input-number v-model="num" placeholder="请输入数量" mode="button" size="large" class="input-demo" />
       </div>
+      
       <div class="generate">
-        <a-input v-model="value" placeholder="" />
+        <a-input v-model="commandValue" placeholder="" />
         <a-button type="primary" shape="round" size="large" @click="copyvalue">复制</a-button>
         <a-button type="primary" shape="round" size="large" @click="execute">执行</a-button>
       </div>
@@ -27,38 +48,125 @@
 <script setup lang="ts">
 import { ref, reactive, computed, inject, onMounted } from 'vue'
 import { useClipboard } from '@vueuse/core'
-import thing from './json/thing.json'
 import { useAppStore } from '@/store/modules/app'
 import { Message } from '@arco-design/web-vue'
 import JSEncrypt from 'jsencrypt';
 import axios from 'axios'
+
 const API_BASE_URL = import.meta.env.VITE_DHWT_API_SERVER;
 const { text, isSupported, copy } = useClipboard()
 const appStore = useAppStore()
 
-const value2 = ref()
-const value3 = ref('give')
+// 类别映射表
+const category_mapping = {
+  "HeadIcon": "head.json", // 头像
+  "Virtual": "thing.json", // 货币
+  "Equipment": "weapon.json", // 武器
+  "Food": "food.json", // 食物
+  "Material": "material.json", // 材料
+  "AvatarCard": "avatar.json", // 角色
+  "ChatBubble": "chat.json", // 聊天气泡
+  "AvatarSkin": "avatarskin.json", // 角色皮肤
+  "PhoneTheme": "phonetheme.json", // 手机主题
+  "PamSkin": "pamskin.json", // 帕姆皮肤
+  "PhoneCase": "phonecase.json", // 手机壳
+  "AvatarExp": "avatarexp.json", // 经验物品(角色)
+  "AvatarRank": "avatarrank.json", // 角色突破材料
+  "EquipmentExp": "equipmentexp.json", // 经验物品(武器)
+  "NormalPet": "pet.json", // 宠物
+  "RogueMedal": "medal.json", // 肉鸽藏品
+}
+
+// 类别中文名称映射
+const categoryNames = {
+  "HeadIcon": "头像",
+  "Virtual": "货币",
+  "Equipment": "武器",
+  "Food": "食物",
+  "Material": "材料",
+  "AvatarCard": "角色",
+  "ChatBubble": "聊天气泡",
+  "AvatarSkin": "角色皮肤",
+  "PhoneTheme": "手机主题",
+  "PamSkin": "帕姆皮肤",
+  "PhoneCase": "手机壳",
+  "AvatarExp": "角色经验",
+  "AvatarRank": "角色突破",
+  "EquipmentExp": "武器经验",
+  "NormalPet": "宠物",
+  "RogueMedal": "肉鸽藏品",
+}
+
+const selectedCategory = ref('')
+const selectedItem = ref('')
+const commandType = ref('give')
 const num = ref(1)
 
-const value = computed(() => {
-  return `${value3.value} ${value2.value} x${num.value}`
+// 响应式数据
+const categoryOptions = ref<Array<{value: string, label: string}>>([])
+const itemsData = reactive<Record<string, any[]>>({})
+const currentItems = ref<any[]>([])
+
+// 计算命令值
+const commandValue = computed(() => {
+  return `${commandType.value} ${selectedItem.value} x${num.value}`
 })
 
-const options = reactive(thing)
-const message = Message
-const execute = async () => {
-  //读取localStorage中存储的uid
-  const uid = localStorage.getItem('uid');
+// 类别选项
+categoryOptions.value = Object.keys(category_mapping).map(key => ({
+  value: key,
+  label: categoryNames[key as keyof typeof categoryNames] || key
+}))
 
+// 加载JSON文件
+const loadJsonFile = async (fileName: string): Promise<any[]> => {
+  try {
+    const module = await import(`./json/${fileName}`)
+    return module.default || module
+  } catch (error) {
+    console.error(`加载文件 ${fileName} 失败:`, error)
+    return []
+  }
+}
+
+// 初始化加载所有类别数据
+const loadAllCategories = async () => {
+  const loadPromises = Object.entries(category_mapping).map(async ([category, fileName]) => {
+    try {
+      const data = await loadJsonFile(fileName)
+      itemsData[category] = data
+      console.log(`加载类别 ${category} 成功，共 ${data.length} 个物品`)
+    } catch (error) {
+      console.error(`加载类别 ${category} 失败:`, error)
+      itemsData[category] = []
+    }
+  })
+  
+  await Promise.all(loadPromises)
+  console.log('所有类别数据加载完成')
+}
+
+// 处理类别变化
+const handleCategoryChange = (category: string) => {
+  selectedItem.value = '' // 清空当前选择的物品
+  if (category && itemsData[category]) {
+    currentItems.value = itemsData[category]
+  } else {
+    currentItems.value = []
+  }
+}
+
+const message = Message
+
+const execute = async () => {
+  const uid = localStorage.getItem('uid');
   if (!uid) {
-    message.info('用户未登录，请先前往“远程”页面执行一次命令，然后重试');
+    message.info('用户未登录，请先前往"远程"页面执行一次命令，然后重试');
     return;
   }
 
-  const command = value.value;
-
+  const command = commandValue.value;
   try {
-    // 发送请求到后端
     const res = await axios.post(`${API_BASE_URL}/api/submit`, {
       keyType: 'PEM',  
       uid: uid,
@@ -68,7 +176,6 @@ const execute = async () => {
     if (res.data.code !== 0) {
       throw new Error('命令提交失败: ' + res.data.message);
     }
-    const responseMessage = res.data.data.message;
     message.success(`命令提交成功：${res.data.data.message}`);
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : '请求失败';
@@ -76,6 +183,7 @@ const execute = async () => {
     console.error(err);
   }
 };
+
 const base64Decode = (str: string): string => {
   try {
     return decodeURIComponent(escape(window.atob(str)));
@@ -85,12 +193,10 @@ const base64Decode = (str: string): string => {
   }
 };
 
-
-
 function copyvalue() {
-  copy(value.value)
+  copy(commandValue.value)
   if (isSupported) {
-    message.success(`已复制${value.value}`)
+    message.success(`已复制${commandValue.value}`)
   }
 }
 
@@ -99,11 +205,20 @@ const send: any = inject("send")
 const showNotice = ref(true)
 const noticeContent = '梦乡公益服完全免费无任何形式收费，如果你是以任何形式付费购买得到的，那你就被骗了，请及时退款并举报。'
 
-// 在页面加载时设置一个延时，用于显示滚动公告，你可以根据需求调整延时时长
-onMounted(() => {
+// 在页面加载时初始化数据
+onMounted(async () => {
   setTimeout(() => {
     showNotice.value = true
   }, 1000)
+  
+  // 加载所有类别数据
+  await loadAllCategories()
+  
+  // 默认选择第一个类别
+  if (categoryOptions.value.length > 0) {
+    selectedCategory.value = categoryOptions.value[0].value
+    handleCategoryChange(selectedCategory.value)
+  }
 })
 </script>
 
@@ -145,6 +260,7 @@ onMounted(() => {
   align-items: center;
   margin-left: 100px;
 }
+
 @media screen and (max-width: 768px) {
   .commuse {
     width: 100%; 

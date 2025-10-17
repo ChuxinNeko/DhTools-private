@@ -304,6 +304,10 @@
     "value": 8008
   },
   {
+    "label": "白厄",
+    "value": 1408
+  },
+  {
     "label": "遐蝶",
     "value": 1407
   },
@@ -316,8 +320,32 @@
     "value": 1409
   },
   {
+    "label": "刻律德菈",
+    "value": 1412
+  },
+  {
     "label": "赛飞儿",
     "value": 1406
+  },
+  {
+    "label": "海瑟音",
+    "value": 1410
+  },
+  {
+    "label": "丹恒•腾荒",
+    "value": 1414
+  },
+  {
+    "label": "长夜月",
+    "value": 1413
+  },
+  {
+    "label": "Saber",
+    "value": 1014
+  },
+  {
+    "label": "Archer",
+    "value": 1015
   },
   {
     "label": "{NICKNAME}",
@@ -334,5 +362,29 @@
   {
     "label": "三月七",
     "value": 6023
+  },
+  {
+    "label": "三月七",
+    "value": 6024
+  },
+  {
+    "label": "花火",
+    "value": 6026
+  },
+  {
+    "label": "青雀",
+    "value": 6027
+  },
+  {
+    "label": "砂金",
+    "value": 6028
+  },
+  {
+    "label": "飞霄",
+    "value": 6029
+  },
+  {
+    "label": "刻律德菈",
+    "value": 6030
   }
 ]
