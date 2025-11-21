@@ -141,15 +141,7 @@
   },
   {
     "label": "{NICKNAME}",
-    "value": 8001
-  },
-  {
-    "label": "{NICKNAME}",
     "value": 8002
-  },
-  {
-    "label": "{NICKNAME}",
-    "value": 8003
   },
   {
     "label": "{NICKNAME}",
@@ -292,16 +284,8 @@
     "value": 1403
   },
   {
-    "label": "{NICKNAME}",
-    "value": 8007
-  },
-  {
     "label": "万敌",
     "value": 1404
-  },
-  {
-    "label": "{NICKNAME}",
-    "value": 8008
   },
   {
     "label": "白厄",
@@ -332,12 +316,32 @@
     "value": 1410
   },
   {
+    "label": "昔涟",
+    "value": 1415
+  },
+  {
     "label": "丹恒•腾荒",
     "value": 1414
   },
   {
     "label": "长夜月",
     "value": 1413
+  },
+  {
+    "label": "{NICKNAME}",
+    "value": 8007
+  },
+  {
+    "label": "{NICKNAME}",
+    "value": 8008
+  },
+  {
+    "label": "{NICKNAME}",
+    "value": 8001
+  },
+  {
+    "label": "{NICKNAME}",
+    "value": 8003
   },
   {
     "label": "Saber",

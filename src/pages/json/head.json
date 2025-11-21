@@ -188,6 +188,14 @@
     "value": 200146
   },
   {
+    "label": "昔涟•赴约",
+    "value": 200147
+  },
+  {
+    "label": "往昔的涟漪•赴约",
+    "value": 200148
+  },
+  {
     "label": "呜呜伯",
     "value": 202001
   },
@@ -268,6 +276,10 @@
     "value": 202020
   },
   {
+    "label": "迷迷",
+    "value": 202021
+  },
+  {
     "label": "缇安娃娃",
     "value": 202022
   },
@@ -290,6 +302,10 @@
   {
     "label": "三月七•节日",
     "value": 202029
+  },
+  {
+    "label": "黄金的若虫",
+    "value": 202030
   },
   {
     "label": "「看不见我」",
@@ -326,6 +342,10 @@
   {
     "label": "「小地兽要大了」",
     "value": 202040
+  },
+  {
+    "label": "最后的赢家",
+    "value": 202041
   },
   {
     "label": "三月七•存护",
@@ -425,15 +445,7 @@
   },
   {
     "label": "{NICKNAME}•毁灭",
-    "value": 208001
-  },
-  {
-    "label": "{NICKNAME}•毁灭",
     "value": 208002
-  },
-  {
-    "label": "{NICKNAME}•存护",
-    "value": 208003
   },
   {
     "label": "{NICKNAME}•存护",
@@ -446,14 +458,6 @@
   {
     "label": "{NICKNAME}•同谐",
     "value": 208006
-  },
-  {
-    "label": "{NICKNAME}•记忆",
-    "value": 208007
-  },
-  {
-    "label": "{NICKNAME}•记忆",
-    "value": 208008
   },
   {
     "label": "青雀",
@@ -640,12 +644,32 @@
     "value": 201410
   },
   {
+    "label": "昔涟",
+    "value": 201415
+  },
+  {
     "label": "丹恒•腾荒",
     "value": 201414
   },
   {
     "label": "长夜月",
     "value": 201413
+  },
+  {
+    "label": "{NICKNAME}•记忆",
+    "value": 208007
+  },
+  {
+    "label": "{NICKNAME}•记忆",
+    "value": 208008
+  },
+  {
+    "label": "{NICKNAME}•毁灭",
+    "value": 208001
+  },
+  {
+    "label": "{NICKNAME}•存护",
+    "value": 208003
   },
   {
     "label": "Saber",
