@@ -18,10 +18,6 @@ let constantRoutes = [
   }
   ,
   {
-    path: '/commuse',
-    component: () => import('@/pages/commuse.vue'),
-  },
-  {
     path: '/holyrelic',
     component: () => import('@/pages/holyrelic.vue'),
   },
