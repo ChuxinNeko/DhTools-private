@@ -29,13 +29,11 @@
   
   const buttons = [
     { label: '登录', route: '/' },
-    { label: '常用', route: '/commuse' },
     { label: '自定义遗器', route: '/holyrelic' },
     { label: '毕业遗器', route: '/holyrelic2' },
     { label: '光锥', route: '/weapon' },
     { label: '物品', route: '/thing' },
     { label: '角色', route: '/avatarall' },
-    { label: '场景', route: '/scene' },
     { label: '任务', route: '/mission' },
     { label: '男娘广场', route: '/moraxlover' },
     { label: '服务器状态', route: '/information' },

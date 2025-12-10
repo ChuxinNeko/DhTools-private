@@ -16,7 +16,6 @@ import {
 
 export const buttons = [
   { label: '登录', route: '/', icon: IconUser },
-  { label: '常用', route: '/commuse', icon: IconHome },
   { label: '自定义遗器', route: '/holyrelic', icon: IconSettings },
   { label: '毕业遗器', route: '/holyrelic2', icon: IconTrophy },
   { label: '光锥', route: '/weapon', icon: IconStar },

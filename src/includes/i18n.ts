@@ -24,7 +24,6 @@ const options: I18nOptions = {
       },
       menu:{
         main:"控制台代码生成",
-        frequently:"常用",
         customrelics:"自定义遗器",
         graduationrelics:"毕业遗器",
         monsterspawning:"怪物生成",
@@ -37,7 +36,6 @@ const options: I18nOptions = {
         leveluser:"角色等级设置",
         food:"食物",
         avatar:"头像",
-        scene:"场景",
         about:"关于",
         remotecontrol:"远程",
         suggest:"任务"

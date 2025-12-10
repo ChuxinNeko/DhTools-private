@@ -27,7 +27,7 @@ import { useClipboard } from '@vueuse/core'
 import { Message } from '@arco-design/web-vue'
 import { useAppStore } from '@/store/modules/app'
 import axios from 'axios'
-import getrole from './json/getrole.json'
+import getrole from './json/avatar.json'
 import JSEncrypt from 'jsencrypt';
 import {useI18n} from "vue-i18n";
 const { t, locale } = useI18n();
