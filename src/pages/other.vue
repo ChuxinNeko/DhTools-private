@@ -64,7 +64,11 @@ const options = reactive([
   },
   {
     title: '已有所有角色满级',
-    value: '/avatar level -1 80',
+    value: '/avatar level all 80',
+  },
+    {
+    title: '已有所有角色满行迹',
+    value: '/avatar talent all 10',
   },
   {
     title: '开拓等级满级',
